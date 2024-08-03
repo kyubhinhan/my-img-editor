@@ -1,10 +1,14 @@
 import { Button } from "@nextui-org/button";
+import HSplitter from "../HSplitter";
 
 export default function Home() {
     return (
-        <div>
-            <Button>버튼</Button>
-            이미지 업로드 화면입니다.
-        </div>
+        <HSplitter>
+            <div slot="left">
+                왼쪽
+            </div>
+            <div slot="right">오른쪽</div>
+        </HSplitter>
+
     );
 }

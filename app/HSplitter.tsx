@@ -15,8 +15,8 @@ export default function HSplitter({
 }>) {
   // right width 설정
   // currentRightWidth는 페이지별로 같아야 하기 때문에 contextAPI로 관리함
-  const [currentRightWidth, setCurrentRightWidth] = useState(300);
-  const [initialRightWidth, setInitialRightWidth] = useState(300);
+  const [initialRightWidth, setInitialRightWidth] = useState(400);
+  const [currentRightWidth, setCurrentRightWidth] = useState(400);
   const [startXPosition, setStartXPosition] = useState(0);
   const [mouseDragging, setMouseDragging] = useState(false);
   const maxRightWidth = 600;
@@ -34,15 +34,14 @@ export default function HSplitter({
   };
   const onMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (mouseDragging) {
-      const dragOffsetX = startXPosition - e.clientX;
-      const rightWidth = initialRightWidth + dragOffsetX;
-      if (minRightWidth > rightWidth) {
-        setCurrentRightWidth(minRightWidth);
-      } else if (maxRightWidth < rightWidth) {
-        setCurrentRightWidth(maxRightWidth);
-      } else {
-        setCurrentRightWidth(rightWidth);
-      }
+      const rightWidth = (() => {
+        const dragOffsetX = startXPosition - e.clientX;
+        const rightWidth = initialRightWidth + dragOffsetX;
+        if (minRightWidth > rightWidth) return minRightWidth;
+        else if (maxRightWidth < rightWidth) return maxRightWidth;
+        else return rightWidth;
+      })();
+      setCurrentRightWidth(rightWidth);
     }
   };
   // end of right width 설정
@@ -64,6 +63,18 @@ export default function HSplitter({
   // end of splitter color 설정
 
   // 접기 및 펼치기 설정
+  const displayStyle = {
+    width: `${currentRightWidth}px`,
+    overflow: 'hidden',
+    whiteSpace: 'noWrap',
+    transition: mouseDragging ? undefined : 'width 0.5s ease',
+  };
+  const hiddenStyle = {
+    width: `0px`,
+    overflow: 'hidden',
+    whiteSpace: 'noWrap',
+    transition: 'width 0.5s ease',
+  };
   const [splitterOpen, setSplitterOpen] = useState(true);
   const onSplitterButtonClicked = () => {
     setSplitterOpen(!splitterOpen);
@@ -98,10 +109,7 @@ export default function HSplitter({
       </div>
       <div
         className="bg-stone-500"
-        style={{
-          width: `${currentRightWidth}px`,
-          display: splitterOpen ? 'block' : 'none',
-        }}
+        style={splitterOpen ? displayStyle : hiddenStyle}
       >
         {right}
       </div>

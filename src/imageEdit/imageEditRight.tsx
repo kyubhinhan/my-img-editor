@@ -3,20 +3,25 @@
 import { Button, ButtonGroup } from '@nextui-org/button';
 import { Dispatch, SetStateAction } from 'react';
 
-export default function ImageUploadRight({
+export default function ImageEditRight({
   setStage,
+  prevStage,
   nextStage,
 }: {
   setStage: Dispatch<SetStateAction<string>>;
+  prevStage: string;
   nextStage: string;
 }) {
+  const prevButtonClicked = () => {
+    setStage(prevStage);
+  };
   const nextButtonClicked = () => {
     setStage(nextStage);
   };
 
   return (
     <div>
-      <Button isDisabled>이전</Button>
+      <Button onClick={prevButtonClicked}>이전</Button>
       <Button onClick={nextButtonClicked}>다음</Button>
     </div>
   );

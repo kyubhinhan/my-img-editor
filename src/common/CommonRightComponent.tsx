@@ -30,7 +30,7 @@ export default function CommonRightComponent({
       setStage(nextStage);
     }
   };
-  const getLabel = (stage: string) => {
+  const getLabel = () => {
     if (stage == 'upload') return '이미지 업로드';
     else if (stage == 'mark') return '이미지 마킹';
     else if (stage == 'edit') return '이미지 에디팅';
@@ -50,7 +50,7 @@ export default function CommonRightComponent({
           marginBottom: '3rem',
         }}
       >
-        {getLabel(stage)}
+        {getLabel()}
       </h2>
       <div className="grow flex flex-col" style={{ gap: '34px' }}>
         {children}

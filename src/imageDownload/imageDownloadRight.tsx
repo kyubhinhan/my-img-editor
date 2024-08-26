@@ -1,7 +1,7 @@
 'use client';
 
-import { Button, ButtonGroup } from '@nextui-org/button';
 import { Dispatch, SetStateAction } from 'react';
+import CommonRightComponent from '@/src/common/CommonRightComponent';
 
 export default function ImageDownloadRight({
   setStage,
@@ -10,14 +10,16 @@ export default function ImageDownloadRight({
   setStage: Dispatch<SetStateAction<string>>;
   prevStage: string;
 }) {
-  const prevButtonClicked = () => {
-    setStage(prevStage);
-  };
-
   return (
-    <div>
-      <Button onClick={prevButtonClicked}>이전</Button>
-      <Button isDisabled>다음</Button>
-    </div>
+    <CommonRightComponent
+      stage="download"
+      setStage={setStage}
+      prevStage={prevStage}
+      nextStage={null}
+      disablePrevButton={false}
+      disableNextButton={true}
+    >
+      <div>download 관련 필요한거</div>
+    </CommonRightComponent>
   );
 }

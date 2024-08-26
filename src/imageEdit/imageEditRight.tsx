@@ -1,7 +1,7 @@
 'use client';
 
-import { Button, ButtonGroup } from '@nextui-org/button';
 import { Dispatch, SetStateAction } from 'react';
+import CommonRightComponent from '@/src/common/CommonRightComponent';
 
 export default function ImageEditRight({
   setStage,
@@ -12,17 +12,16 @@ export default function ImageEditRight({
   prevStage: string;
   nextStage: string;
 }) {
-  const prevButtonClicked = () => {
-    setStage(prevStage);
-  };
-  const nextButtonClicked = () => {
-    setStage(nextStage);
-  };
-
   return (
-    <div>
-      <Button onClick={prevButtonClicked}>이전</Button>
-      <Button onClick={nextButtonClicked}>다음</Button>
-    </div>
+    <CommonRightComponent
+      stage="edit"
+      setStage={setStage}
+      prevStage={prevStage}
+      nextStage={nextStage}
+      disablePrevButton={false}
+      disableNextButton={false}
+    >
+      <div>edit 관련 필요한거</div>
+    </CommonRightComponent>
   );
 }

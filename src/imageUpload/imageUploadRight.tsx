@@ -1,8 +1,8 @@
 'use client';
 
-import { Button } from '@nextui-org/button';
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import ReadOnlyTextBox from '@/src/common/ReadOnlyTextBox';
+import CommonRightComponent from '@/src/common/CommonRightComponent';
 
 export default function ImageUploadRight({
   imageFile,
@@ -15,9 +15,6 @@ export default function ImageUploadRight({
 }) {
   //// 컴포넌트 순서 조작 버튼 관련
   const [buttonDisabled, setButtonDisabled] = useState(true);
-  const nextButtonClicked = () => {
-    setStage(nextStage);
-  };
   useEffect(() => {
     if (imageFile == null) {
       setButtonDisabled(true);
@@ -49,37 +46,19 @@ export default function ImageUploadRight({
   //// end of ReadOnlyTextBox 관련
 
   return (
-    <section className="h-full flex flex-col">
-      <h2
-        style={{
-          fontWeight: 800,
-          fontSize: '1.5rem',
-          lineHeight: '2rem',
-          marginBottom: '3rem',
-        }}
-      >
-        이미지 정보
-      </h2>
-      <div className="grow flex flex-col" style={{ gap: '34px' }}>
-        <ReadOnlyTextBox label="이름" value={fileName} />
-        <ReadOnlyTextBox label="타입" value={fileType} />
-        <ReadOnlyTextBox label="사이즈" value={fileSize} />
-        <ReadOnlyTextBox label="최종 수정 날짜" value={fileLMD} />
-      </div>
-      <div className="flex flex-row" style={{ gap: '16px' }}>
-        <Button isDisabled className="grow" size={'sm'}>
-          이전
-        </Button>
-        <Button
-          className="grow"
-          onClick={nextButtonClicked}
-          size={'sm'}
-          isDisabled={buttonDisabled}
-        >
-          다음
-        </Button>
-      </div>
-    </section>
+    <CommonRightComponent
+      stage="upload"
+      setStage={setStage}
+      prevStage={null}
+      nextStage={nextStage}
+      disablePrevButton={true}
+      disableNextButton={buttonDisabled}
+    >
+      <ReadOnlyTextBox label="이름" value={fileName} />
+      <ReadOnlyTextBox label="타입" value={fileType} />
+      <ReadOnlyTextBox label="사이즈" value={fileSize} />
+      <ReadOnlyTextBox label="최종 수정 날짜" value={fileLMD} />
+    </CommonRightComponent>
   );
 }
 

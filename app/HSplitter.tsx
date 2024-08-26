@@ -74,6 +74,7 @@ export default function HSplitter({
     overflow: 'hidden',
     whiteSpace: 'noWrap',
     transition: 'width 0.5s ease',
+    padding: '0px',
   };
   const [splitterOpen, setSplitterOpen] = useState(true);
   const onSplitterButtonClicked = () => {
@@ -88,7 +89,7 @@ export default function HSplitter({
       onMouseMove={onMouseMove}
     >
       <div className="grow flex justify-center items-center bg-stone-700">
-        <div className="w-2/3 h-2/3 bg-stone-600 p-3">{left}</div>
+        <div className="w-11/12 h-5/6 bg-stone-600 p-10">{left}</div>
       </div>
       <div className="relative w-2">
         <div
@@ -108,7 +109,7 @@ export default function HSplitter({
         </div>
       </div>
       <div
-        className="bg-stone-500"
+        className="bg-stone-500 px-4 py-8"
         style={splitterOpen ? displayStyle : hiddenStyle}
       >
         {right}

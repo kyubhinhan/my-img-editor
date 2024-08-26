@@ -39,7 +39,13 @@ export default function Home() {
   const renderRightSlot = () => {
     switch (stage) {
       case 'upload':
-        return <ImageUploadRight setStage={setStage} nextStage="mark" />;
+        return (
+          <ImageUploadRight
+            imageFile={imageFile}
+            setStage={setStage}
+            nextStage="mark"
+          />
+        );
       case 'mark':
         return (
           <ImageMarkRight

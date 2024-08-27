@@ -89,7 +89,12 @@ export default function HSplitter({
       onMouseMove={onMouseMove}
     >
       <div className="grow flex justify-center items-center bg-stone-700">
-        <div className="w-11/12 h-5/6 bg-stone-600 p-10">{left}</div>
+        <div
+          className="bg-stone-600"
+          style={{ width: '800px', height: '600px', padding: '40px' }}
+        >
+          {left}
+        </div>
       </div>
       <div className="relative w-2">
         <div

@@ -26,7 +26,7 @@ export default function Home() {
           <ImageUploadLeft imageFile={imageFile} setImageFile={setImageFile} />
         );
       case 'mark':
-        return <ImageMarkLeft />;
+        return <ImageMarkLeft imageFile={imageFile} />;
       case 'edit':
         return <ImageEditLeft />;
       case 'download':

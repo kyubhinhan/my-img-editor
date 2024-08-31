@@ -2,6 +2,7 @@
 
 import { useState, useEffect, ReactElement } from 'react';
 import HSplitter from '@/app/HSplitter';
+import ImageManager from '@/src/common/ImageManager';
 import ImageUploadLeft from '@/src/imageUpload/imageUploadLeft';
 import ImageUploadRight from '@/src/imageUpload/imageUploadRight';
 import ImageMarkLeft from '@/src/imageMark/imageMarkLeft';
@@ -13,7 +14,7 @@ import ImageDownloadRight from '@/src/imageDownload/imageDownloadRight';
 
 export default function Home() {
   // 전역 데이터 설정
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageManager, setImageManager] = useState<ImageManager | null>(null);
   const [stage, setStage] = useState('upload');
 
   // end of 전역 데이터 설정
@@ -23,10 +24,13 @@ export default function Home() {
     switch (stage) {
       case 'upload':
         return (
-          <ImageUploadLeft imageFile={imageFile} setImageFile={setImageFile} />
+          <ImageUploadLeft
+            imageManager={imageManager}
+            setImageManager={setImageManager}
+          />
         );
       case 'mark':
-        return <ImageMarkLeft imageFile={imageFile} />;
+        return <ImageMarkLeft imageManager={imageManager} />;
       case 'edit':
         return <ImageEditLeft />;
       case 'download':
@@ -41,7 +45,7 @@ export default function Home() {
       case 'upload':
         return (
           <ImageUploadRight
-            imageFile={imageFile}
+            imageManager={imageManager}
             setStage={setStage}
             nextStage="mark"
           />

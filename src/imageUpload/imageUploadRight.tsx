@@ -3,25 +3,26 @@
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import ReadOnlyTextBox from '@/src/common/ReadOnlyTextBox';
 import CommonRightComponent from '@/src/common/CommonRightComponent';
+import ImageManager from '../common/ImageManager';
 
 export default function ImageUploadRight({
-  imageFile,
+  imageManager,
   setStage,
   nextStage,
 }: {
-  imageFile: File | null;
+  imageManager: ImageManager | null;
   setStage: Dispatch<SetStateAction<string>>;
   nextStage: string;
 }) {
   //// 컴포넌트 순서 조작 버튼 관련
   const [buttonDisabled, setButtonDisabled] = useState(true);
   useEffect(() => {
-    if (imageFile == null) {
+    if (imageManager == null) {
       setButtonDisabled(true);
     } else {
       setButtonDisabled(false);
     }
-  }, [imageFile]);
+  }, [imageManager]);
 
   //// end of 컴포넌트 순서 조작 버튼 관련
 
@@ -31,18 +32,20 @@ export default function ImageUploadRight({
   const [fileSize, setFileSize] = useState('-');
   const [fileLMD, setFileLMD] = useState('-');
   useEffect(() => {
-    if (imageFile == null) {
+    if (imageManager == null) {
       setFileName('-');
       setFileType('-');
       setFileSize('-');
       setFileLMD('-');
     } else {
-      setFileName(imageFile.name);
-      setFileType(getFileType(imageFile));
-      setFileSize(getFileSize(imageFile));
-      setFileLMD(getFileLMD(imageFile));
+      const { name, type, size, lastModifiedDate } =
+        imageManager.getImageInfo();
+      setFileName(name);
+      setFileType(type);
+      setFileSize(size);
+      setFileLMD(lastModifiedDate);
     }
-  }, [imageFile]);
+  }, [imageManager]);
   //// end of ReadOnlyTextBox 관련
 
   return (
@@ -60,22 +63,4 @@ export default function ImageUploadRight({
       <ReadOnlyTextBox label="최종 수정 날짜" value={fileLMD} />
     </CommonRightComponent>
   );
-}
-
-function getFileType(imageFile: File) {
-  const type = imageFile.type;
-  return type.split('/')[1];
-}
-
-function getFileSize(imageFile: File) {
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  const bytes = imageFile.size;
-  if (bytes === 0) return '0 Bytes';
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
-}
-
-function getFileLMD(imageFile: File) {
-  const lastModifiedDate = new Date(imageFile.lastModified);
-  return lastModifiedDate.toLocaleString('ko-KR', { timeZone: 'UTC' });
 }

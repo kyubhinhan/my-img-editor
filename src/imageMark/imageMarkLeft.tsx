@@ -1,39 +1,31 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import ImageUtil from '../common/ImageUtil';
+import ImageManager from '../common/ImageManager';
 
 export default function ImageMarkLeft({
-  imageFile,
+  imageManager,
 }: {
-  imageFile: File | null;
+  imageManager: ImageManager | null;
 }) {
-  // 이미지를 canvas 위에 올리는 것 관련
+  //// 이미지를 canvas 위에 보여주는 것과 관련
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
-    if (imageFile == null) {
-      // canvas를 비워줌
-      const canvas = canvasRef.current;
-      const context = canvas?.getContext('2d');
-      context?.clearRect(0, 0, canvas?.width ?? 0, canvas?.height ?? 0);
+    if (imageManager == null) {
+      // do nothing
+      // 이 컴포넌트가 화면에 보일 때, imageManager는 존재함
     } else {
-      // canvas 위에 이미지를 올려줌
-      const reader = new FileReader();
-      reader.readAsDataURL(imageFile);
-      reader.onload = (e) => {
-        const img = new Image();
-        img.src = e.target?.result as string;
-        img.onload = () => {
-          const context = canvasRef.current?.getContext('2d');
-          context?.drawImage(img, 0, 0);
-        };
-      };
+      if (canvasRef.current) {
+        imageManager.showImage(canvasRef.current);
+      }
     }
-  }, [imageFile]);
-  // end of 이미지를 canvas 위에 올리는 것 관련
+  }, [imageManager]);
+  //// end of 이미지를 canvas 위에 보여주는 것과 관련
 
   return (
     <section className="h-full">
-      <canvas width={720} height={500} ref={canvasRef}></canvas>
+      <canvas width={720} height={460} ref={canvasRef}></canvas>
     </section>
   );
 }

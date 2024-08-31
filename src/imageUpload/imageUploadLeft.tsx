@@ -2,18 +2,24 @@
 
 import { useState, useRef, useEffect, Dispatch, SetStateAction } from 'react';
 import { Button } from '@nextui-org/button';
-import { Image } from '@nextui-org/image';
 import { BiImageAdd } from 'react-icons/bi';
+import ImageManager from '../common/ImageManager';
 
 export default function ImageUploadLeft({
-  imageFile,
-  setImageFile,
+  imageManager,
+  setImageManager,
 }: {
-  imageFile: File | null;
-  setImageFile: Dispatch<SetStateAction<File | null>>;
+  imageManager: ImageManager | null;
+  setImageManager: Dispatch<SetStateAction<ImageManager | null>>;
 }) {
   //// 이미지 파일 업로드 관련
   const [imageWarningMessage, setImageWarningMessage] = useState('');
+  const setNewImageManager = (imageFile: File | undefined) => {
+    if (imageFile != undefined) {
+      setImageManager(new ImageManager(imageFile));
+      setImageWarningMessage('');
+    }
+  };
 
   // 내부를 클릭해서 업로드
   const inputFileRef = useRef<HTMLInputElement>(null);
@@ -23,11 +29,8 @@ export default function ImageUploadLeft({
     }
   };
   const onFileUploaded = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      setImageWarningMessage('');
-    }
+    const orgfile = event.target.files?.[0];
+    setNewImageManager(orgfile);
   };
 
   // drag & drop으로 업로드
@@ -35,7 +38,7 @@ export default function ImageUploadLeft({
     const files = Array.from(event.dataTransfer.files);
     const imageFiles = files.filter((file) => file.type.startsWith('image/'));
     if (imageFiles.length > 0) return imageFiles[0];
-    else return null;
+    else return undefined;
   };
   const onDragOver = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -47,39 +50,33 @@ export default function ImageUploadLeft({
 
     const imageFile = getImageFile(event);
     if (imageFile != null) {
-      setImageFile(imageFile);
-      setImageWarningMessage('');
+      setNewImageManager(imageFile);
     } else {
       setImageWarningMessage('이미지 파일만 업로드 할 수 있습니다.');
     }
   };
   //// end of 이미지 파일 업로드 관련
 
-  //// 이미지 파일을 보여주기
-  const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
+  //// 이미지 파일을 보여주는 것 관련
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
-    if (imageFile == null) {
-      setImageSrc(undefined);
+    if (imageManager == null) {
+      // do nothing
+      // 여기서는 어차피 캔버스가 랜더링되지 않음
     } else {
-      const reader = new FileReader();
-      reader.readAsDataURL(imageFile);
-      reader.onload = (e) => {
-        setImageSrc(e.target?.result as string);
-      };
+      if (canvasRef.current) {
+        // imageManager가 canvas 위에 이미지를 띄워줌
+        imageManager.showImage(canvasRef.current);
+      }
     }
-  }, [imageFile]);
-  //// end of 이미지 파일을 보여주기
+  }, [imageManager]);
+  //// end of 이미지 파일을 보여주는 것 관련
 
   //// 이미지 파일 삭제 관련
   const onDeleteButtonClicked = () => {
-    setImageFile(null);
+    setImageManager(null);
   };
   //// end of 이미지 파일 삭제 관련
-
-  //// 이미지 높이 관련
-  // 전체 height - 제목(50px) - 아래 버튼(40px) - gap 2개(40px)
-  const imageHeight = 'calc(100% - 50px - 40px - 40px)';
-  //// end of 이미지 높이 관련
 
   //// image upload field의 컬러 관련
   // slate 300이 default
@@ -98,14 +95,11 @@ export default function ImageUploadLeft({
 
   return (
     <div className="h-full flex flex-col" style={{ gap: '20px' }}>
-      <div className="text-center" style={{ height: '50px' }}>
-        이미지 업로드
-      </div>
-      {imageFile == null ? (
+      {imageManager == null ? (
         <div
           className="bg-stone-500 cursor-pointer flex flex-col justify-center items-center"
           style={{
-            height: imageHeight,
+            height: '460px',
             borderRadius: '15px',
             borderWidth: '3px',
             borderStyle: 'dotted',
@@ -130,17 +124,12 @@ export default function ImageUploadLeft({
           />
         </div>
       ) : (
-        <Image
-          alt="uploaded image"
-          style={{ width: '100%', height: imageHeight, objectFit: 'cover' }}
-          removeWrapper
-          src={imageSrc}
-        ></Image>
+        <canvas width={720} height={460} ref={canvasRef}></canvas>
       )}
       <Button
         color="danger"
         variant="solid"
-        isDisabled={imageFile == null}
+        isDisabled={imageManager == null}
         style={{ height: '40px' }}
         onClick={onDeleteButtonClicked}
       >

@@ -26,7 +26,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/ImageUtil.js"
+    "app/ImageUtil.js",
+    "src/common/ImageUtil.ts"
   ],
   "exclude": ["node_modules"]
 }

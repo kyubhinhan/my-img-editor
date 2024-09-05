@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import ImageUtil from '../common/ImageUtil';
 import ImageManager from '../common/ImageManager';
 
 export default function ImageMarkLeft({

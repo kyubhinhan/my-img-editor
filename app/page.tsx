@@ -16,7 +16,6 @@ export default function Home() {
   // 전역 데이터 설정
   const [imageManager, setImageManager] = useState<ImageManager | null>(null);
   const [stage, setStage] = useState('upload');
-
   // end of 전역 데이터 설정
 
   // 화면 관련 컴포넌트 설정
@@ -53,6 +52,7 @@ export default function Home() {
       case 'mark':
         return (
           <ImageMarkRight
+            imageManager={imageManager}
             setStage={setStage}
             prevStage="upload"
             nextStage="edit"

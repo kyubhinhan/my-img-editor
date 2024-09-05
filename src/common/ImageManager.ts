@@ -1,8 +1,27 @@
-class ImageManager {
+import { EventEmitter } from 'events';
+import ErrUtil from './ErrUtil';
+import Marker from './Marker';
+import Lodash from 'lodash';
+
+class ImageManager extends EventEmitter {
   private imageFile: File;
+  public markers: Marker[];
+  private activeMarker: Marker | null;
+  private markInfo: Object;
 
   constructor(imageFile: File) {
+    super();
     this.imageFile = imageFile;
+    this.markers = [
+      new Marker(Lodash.uniqueId(), '천장'),
+      new Marker(Lodash.uniqueId(), '벽'),
+      new Marker(Lodash.uniqueId(), '바닥'),
+    ];
+    // 활성 마커
+    this.activeMarker = this.markers[0];
+
+    // 이미지에 표시된 마킹 정보
+    this.markInfo = {};
   }
 
   // 이미지 정보를 반환하는 메소드
@@ -39,6 +58,35 @@ class ImageManager {
     };
 
     img.src = url;
+  }
+
+  getActiveMarker() {
+    return this.activeMarker;
+  }
+
+  setActiveMarker(marker: Marker | null) {
+    this.activeMarker = marker;
+    this.emit('activeMarkerChange', marker); // 이벤트 발생
+  }
+
+  getMarkers() {
+    return this.markers;
+  }
+
+  // marker를 추가하는 메소드
+  addMarker(name: string) {
+    this.markers.push(new Marker(Lodash.uniqueId(), name));
+    this.emit('markersChange', this.markers); // 이벤트 발생
+  }
+
+  // marker를 제거하는 메소드
+  deleteMarker(id: string) {
+    ErrUtil.assert(
+      this.markers.some((marker) => marker.id == id),
+      '잘못된 id입니다.'
+    );
+    this.markers = this.markers.filter((marker) => marker.id != id);
+    this.emit('markersChange', this.markers); // 이벤트 발생
   }
 }
 

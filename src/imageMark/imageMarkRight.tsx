@@ -2,6 +2,7 @@
 
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import CommonRightComponent from '@/src/common/CommonRightComponent';
+import { ScrollShadow } from '@nextui-org/scroll-shadow';
 import ImageManager from '../common/ImageManager';
 import MarkerItem from './markerItem';
 import { Button } from '@nextui-org/button';
@@ -22,8 +23,25 @@ export default function ImageMarkRight({
   const [markers, setMarkers] = useState<Marker[]>([]);
 
   useEffect(() => {
-    setMarkers(imageManager?.getMarkers() ?? []);
-  }, [imageManager?.getMarkers()]);
+    const updateMarkers = () => {
+      setMarkers(imageManager?.getMarkers() ?? []);
+    };
+    // 초기 설정
+    updateMarkers();
+    // imageManager가 존재하면 이벤트 리스너 등록
+    imageManager?.on('markersChange', updateMarkers);
+    // 컴포넌트 언마운트 시 이벤트 리스너 해제
+    return () => {
+      imageManager?.off('markersChange', updateMarkers);
+    };
+  }, [imageManager]);
+
+  const addMarker = () => {
+    imageManager?.addMarker();
+  };
+  const deleteMarker = (id: string) => {
+    imageManager?.deleteMarker(id);
+  };
   //// end of Markers 조작
 
   //// ActiveMarker 조작
@@ -33,13 +51,10 @@ export default function ImageMarkRight({
     const updateActiveMarker = () => {
       setActiveMarker(imageManager?.getActiveMarker() ?? null);
     };
-
     // 초기 설정
     updateActiveMarker();
-
     // imageManager가 존재하면 이벤트 리스너 등록
     imageManager?.on('activeMarkerChange', updateActiveMarker);
-
     // 컴포넌트 언마운트 시 이벤트 리스너 해제
     return () => {
       imageManager?.off('activeMarkerChange', updateActiveMarker);
@@ -60,17 +75,25 @@ export default function ImageMarkRight({
       disablePrevButton={false}
       disableNextButton={false}
     >
-      <Button size={'sm'} style={{ width: '100px' }}>
-        마커 추가
-      </Button>
-      {markers.map((marker) => (
-        <MarkerItem
-          key={marker.id}
-          marker={marker}
-          isActive={ActiveMarker?.id == marker.id}
-          setActiveMarker={doSetActiveMarker}
-        />
-      ))}
+      <div className="flex flex-col" style={{ gap: '20px' }}>
+        <Button size={'sm'} style={{ width: '100px' }} onClick={addMarker}>
+          마커 추가
+        </Button>
+        <ScrollShadow
+          className="flex flex-col"
+          style={{ gap: '34px', height: '550px' }}
+        >
+          {markers.map((marker) => (
+            <MarkerItem
+              key={marker.id}
+              marker={marker}
+              isActive={ActiveMarker?.id == marker.id}
+              setActiveMarker={doSetActiveMarker}
+              deleteMarker={deleteMarker}
+            />
+          ))}
+        </ScrollShadow>
+      </div>
     </CommonRightComponent>
   );
 }

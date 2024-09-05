@@ -57,10 +57,12 @@ export default function ImageUploadRight({
       disablePrevButton={true}
       disableNextButton={buttonDisabled}
     >
-      <ReadOnlyTextBox label="이름" value={fileName} />
-      <ReadOnlyTextBox label="타입" value={fileType} />
-      <ReadOnlyTextBox label="사이즈" value={fileSize} />
-      <ReadOnlyTextBox label="최종 수정 날짜" value={fileLMD} />
+      <div className="h-full flex flex-col" style={{ gap: '34px' }}>
+        <ReadOnlyTextBox label="이름" value={fileName} />
+        <ReadOnlyTextBox label="타입" value={fileType} />
+        <ReadOnlyTextBox label="사이즈" value={fileSize} />
+        <ReadOnlyTextBox label="최종 수정 날짜" value={fileLMD} />
+      </div>
     </CommonRightComponent>
   );
 }

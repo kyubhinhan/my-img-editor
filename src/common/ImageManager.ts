@@ -5,7 +5,7 @@ import Lodash from 'lodash';
 
 class ImageManager extends EventEmitter {
   private imageFile: File;
-  public markers: Marker[];
+  private markers: Marker[];
   private activeMarker: Marker | null;
   private markInfo: Object;
 
@@ -74,8 +74,11 @@ class ImageManager extends EventEmitter {
   }
 
   // marker를 추가하는 메소드
-  addMarker(name: string) {
-    this.markers.push(new Marker(Lodash.uniqueId(), name));
+  addMarker() {
+    this.markers = [
+      ...this.markers,
+      new Marker(Lodash.uniqueId(), `마커 번호 ${this.markers.length}`),
+    ];
     this.emit('markersChange', this.markers); // 이벤트 발생
   }
 
@@ -87,6 +90,10 @@ class ImageManager extends EventEmitter {
     );
     this.markers = this.markers.filter((marker) => marker.id != id);
     this.emit('markersChange', this.markers); // 이벤트 발생
+    if (this.activeMarker?.id == id) {
+      // 제거되는 marker가 activeMarker였을 경우, activeMarker로 비워줌
+      this.setActiveMarker(null);
+    }
   }
 }
 

@@ -52,9 +52,7 @@ export default function CommonRightComponent({
       >
         {getLabel()}
       </h2>
-      <div className="grow flex flex-col" style={{ gap: '34px' }}>
-        {children}
-      </div>
+      <div className="grow">{children}</div>
       <div className="flex flex-row" style={{ gap: '16px' }}>
         <Button
           className="grow"

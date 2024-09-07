@@ -64,9 +64,19 @@ class ImageManager extends EventEmitter {
     return this.activeMarker;
   }
 
-  setActiveMarker(marker: Marker | null) {
-    this.activeMarker = marker;
-    this.emit('activeMarkerChange', marker); // 이벤트 발생
+  setActiveMarker(markerId: string | null) {
+    if (markerId) {
+      const targetMarker = this.markers.find((marker) => marker.id == markerId);
+      if (targetMarker) {
+        this.activeMarker = targetMarker;
+        this.emit('activeMarkerChange', this.activeMarker); // 이벤트 발생
+      } else {
+        ErrUtil.assert(false);
+      }
+    } else {
+      this.activeMarker = null;
+      this.emit('activeMarkerChange', this.activeMarker);
+    }
   }
 
   getMarkers() {
@@ -75,11 +85,13 @@ class ImageManager extends EventEmitter {
 
   // marker를 추가하는 메소드
   addMarker() {
+    const newMarkerId = Lodash.uniqueId();
     this.markers = [
       ...this.markers,
-      new Marker(Lodash.uniqueId(), `마커 번호 ${this.markers.length}`),
+      new Marker(newMarkerId, `마커 번호 ${this.markers.length}`),
     ];
     this.emit('markersChange', this.markers); // 이벤트 발생
+    return newMarkerId;
   }
 
   // marker를 제거하는 메소드

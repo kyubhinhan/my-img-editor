@@ -94,47 +94,53 @@ export default function ImageUploadLeft({
   //// end of image upload field의 컬러 관련
 
   return (
-    <div className="h-full flex flex-col" style={{ gap: '20px' }}>
-      {imageManager == null ? (
-        <div
-          className="bg-stone-500 cursor-pointer flex flex-col justify-center items-center"
-          style={{
-            height: '460px',
-            borderRadius: '15px',
-            borderWidth: '3px',
-            borderStyle: 'dotted',
-            borderColor: iconColor,
-          }}
-          onMouseDown={onMouseDown}
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
-          onDragOver={onDragOver}
-          onDrop={onDrop}
-        >
-          <BiImageAdd size={'30%'} style={{ color: iconColor }} />
-          {imageWarningMessage != '' && (
-            <div style={{ color: '#ef4444' }}>{imageWarningMessage}</div>
-          )}
-          <input
-            ref={inputFileRef}
-            type="file"
-            accept="image/*"
-            className="invisible"
-            onChange={onFileUploaded}
-          />
-        </div>
-      ) : (
-        <canvas width={720} height={460} ref={canvasRef}></canvas>
-      )}
-      <Button
-        color="danger"
-        variant="solid"
-        isDisabled={imageManager == null}
-        style={{ height: '40px' }}
-        onClick={onDeleteButtonClicked}
+    <section className="h-full flex flex-col items-center">
+      <div style={{ height: '120px' }}></div>
+      <div
+        className="flex flex-col"
+        style={{ gap: '20px', width: '800px', height: '600px' }}
       >
-        이미지 삭제
-      </Button>
-    </div>
+        {imageManager == null ? (
+          <div
+            className="bg-stone-500 cursor-pointer flex flex-col justify-center items-center"
+            style={{
+              height: '460px',
+              borderRadius: '15px',
+              borderWidth: '3px',
+              borderStyle: 'dotted',
+              borderColor: iconColor,
+            }}
+            onMouseDown={onMouseDown}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+            onDragOver={onDragOver}
+            onDrop={onDrop}
+          >
+            <BiImageAdd size={'30%'} style={{ color: iconColor }} />
+            {imageWarningMessage != '' && (
+              <div style={{ color: '#ef4444' }}>{imageWarningMessage}</div>
+            )}
+            <input
+              ref={inputFileRef}
+              type="file"
+              accept="image/*"
+              className="invisible"
+              onChange={onFileUploaded}
+            />
+          </div>
+        ) : (
+          <canvas width={720} height={460} ref={canvasRef}></canvas>
+        )}
+        <Button
+          color="danger"
+          variant="solid"
+          isDisabled={imageManager == null}
+          style={{ height: '40px' }}
+          onClick={onDeleteButtonClicked}
+        >
+          이미지 삭제
+        </Button>
+      </div>
+    </section>
   );
 }

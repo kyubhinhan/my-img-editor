@@ -34,7 +34,12 @@ export default function ImageMarkRight({
   const [deleteMarkerId, setDeleteMarkerId] = useState<string | null>(null);
 
   const addMarker = () => {
-    imageManager?.addMarker();
+    if (imageManager) {
+      const newMarkerId = imageManager.addMarker();
+      imageManager.setActiveMarker(newMarkerId);
+    } else {
+      ErrUtil.assert(false);
+    }
   };
   const openDeleteMarkerModal = (id: string) => {
     setDeleteMarkerId(id);
@@ -80,7 +85,11 @@ export default function ImageMarkRight({
     };
   }, [imageManager]);
   const doSetActiveMarker = (marker: Marker | null) => {
-    imageManager?.setActiveMarker(marker);
+    if (marker) {
+      imageManager?.setActiveMarker(marker.id);
+    } else {
+      imageManager?.setActiveMarker(null);
+    }
   };
   //// end of ActiveMarker 조작
 

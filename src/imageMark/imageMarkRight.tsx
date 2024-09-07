@@ -5,8 +5,17 @@ import CommonRightComponent from '@/src/common/CommonRightComponent';
 import { ScrollShadow } from '@nextui-org/scroll-shadow';
 import ImageManager from '../common/ImageManager';
 import MarkerItem from './markerItem';
-import { Button } from '@nextui-org/button';
 import Marker from '../common/Marker';
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  useDisclosure,
+} from '@nextui-org/react';
+import ErrUtil from '../common/ErrUtil';
 
 export default function ImageMarkRight({
   imageManager,
@@ -21,6 +30,24 @@ export default function ImageMarkRight({
 }) {
   //// Markers 조작
   const [markers, setMarkers] = useState<Marker[]>([]);
+  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
+  const [deleteMarkerId, setDeleteMarkerId] = useState<string | null>(null);
+
+  const addMarker = () => {
+    imageManager?.addMarker();
+  };
+  const openDeleteMarkerModal = (id: string) => {
+    setDeleteMarkerId(id);
+    onOpen();
+  };
+  const deleteMarker = () => {
+    if (deleteMarkerId && imageManager) {
+      imageManager.deleteMarker(deleteMarkerId);
+      onClose();
+    } else {
+      ErrUtil.assert(false);
+    }
+  };
 
   useEffect(() => {
     const updateMarkers = () => {
@@ -35,18 +62,10 @@ export default function ImageMarkRight({
       imageManager?.off('markersChange', updateMarkers);
     };
   }, [imageManager]);
-
-  const addMarker = () => {
-    imageManager?.addMarker();
-  };
-  const deleteMarker = (id: string) => {
-    imageManager?.deleteMarker(id);
-  };
   //// end of Markers 조작
 
   //// ActiveMarker 조작
   const [ActiveMarker, setActiveMarker] = useState<Marker | null>(null);
-
   useEffect(() => {
     const updateActiveMarker = () => {
       setActiveMarker(imageManager?.getActiveMarker() ?? null);
@@ -60,7 +79,6 @@ export default function ImageMarkRight({
       imageManager?.off('activeMarkerChange', updateActiveMarker);
     };
   }, [imageManager]);
-
   const doSetActiveMarker = (marker: Marker | null) => {
     imageManager?.setActiveMarker(marker);
   };
@@ -89,11 +107,27 @@ export default function ImageMarkRight({
               marker={marker}
               isActive={ActiveMarker?.id == marker.id}
               setActiveMarker={doSetActiveMarker}
-              deleteMarker={deleteMarker}
+              deleteMarker={openDeleteMarkerModal}
             />
           ))}
         </ScrollShadow>
       </div>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1 text-black">
+            알림
+          </ModalHeader>
+          <ModalBody className="text-black">
+            <p>정말 삭제하시겠습니까?</p>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="danger" onPress={deleteMarker}>
+              삭제
+            </Button>
+            <Button onPress={onClose}>닫기</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </CommonRightComponent>
   );
 }

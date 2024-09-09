@@ -107,6 +107,12 @@ class ImageManager extends EventEmitter {
       this.setActiveMarker(null);
     }
   }
+
+  // marker 수정 이벤트를 올림
+  emitChangeMarker() {
+    this.markers = [...this.markers];
+    this.emit('markersChange', this.markers);
+  }
 }
 
 export default ImageManager;

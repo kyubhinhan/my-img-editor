@@ -67,13 +67,16 @@ export default function HSplitter({
     width: `${currentRightWidth}px`,
     overflow: 'hidden',
     whiteSpace: 'noWrap',
-    transition: mouseDragging ? undefined : 'width 0.5s ease',
+    transition: mouseDragging
+      ? undefined
+      : 'width 0.5s ease, padding 0.5s ease',
+    padding: '20px 10px',
   };
   const hiddenStyle = {
     width: `0px`,
     overflow: 'hidden',
     whiteSpace: 'noWrap',
-    transition: 'width 0.5s ease',
+    transition: 'width 0.5s ease, padding 0.5s ease',
     padding: '0px',
   };
   const [splitterOpen, setSplitterOpen] = useState(true);
@@ -107,7 +110,7 @@ export default function HSplitter({
         </div>
       </div>
       <div
-        className="bg-stone-500 px-4 py-8"
+        className="bg-stone-500"
         style={splitterOpen ? displayStyle : hiddenStyle}
       >
         {right}

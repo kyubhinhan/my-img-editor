@@ -2,7 +2,6 @@
 
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import CommonRightComponent from '@/src/common/CommonRightComponent';
-import { ScrollShadow } from '@nextui-org/scroll-shadow';
 import ImageManager from '../common/ImageManager';
 import MarkerItem from './markerItem';
 import Marker from '../common/Marker';
@@ -14,6 +13,7 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
+  ScrollShadow,
 } from '@nextui-org/react';
 import ErrUtil from '../common/ErrUtil';
 

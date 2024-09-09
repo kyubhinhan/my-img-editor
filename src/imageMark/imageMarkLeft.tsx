@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import ImageManager from '../common/ImageManager';
 import Marker from '../common/Marker';
+import MarkerEditor from './markerEditor';
 
 export default function ImageMarkLeft({
   imageManager,
@@ -24,8 +25,13 @@ export default function ImageMarkLeft({
       imageManager?.off('activeMarkerChange', updateActiveMarker);
     };
   }, [imageManager]);
-
   //// end of activeMarker 관련
+
+  //// marker edit 관련
+  const emitMarkerChange = () => {
+    imageManager?.emitChangeMarker();
+  };
+  //// end of marker edit 관련
 
   //// 이미지를 canvas 위에 보여주는 것과 관련
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -43,9 +49,12 @@ export default function ImageMarkLeft({
 
   return (
     <section className="h-full flex flex-col items-center">
-      <div style={{ height: '180px' }}>
-        {activeMarker && <p>{activeMarker.name}</p>}
-      </div>
+      <section style={{ height: '180px', width: '800px' }}>
+        <MarkerEditor
+          marker={activeMarker}
+          emitMarkerChange={emitMarkerChange}
+        />
+      </section>
       <canvas width={800} height={500} ref={canvasRef}></canvas>
     </section>
   );

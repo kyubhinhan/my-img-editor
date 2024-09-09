@@ -6,6 +6,10 @@ class Marker {
     this.id = id;
     this.name = name;
   }
+
+  setName(newName: string) {
+    this.name = newName;
+  }
 }
 
 export default Marker;

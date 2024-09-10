@@ -23,7 +23,7 @@ export default function ImageMarkRight({
   prevStage,
   nextStage,
 }: {
-  imageManager: ImageManager | null;
+  imageManager: ImageManager;
   setStage: Dispatch<SetStateAction<string>>;
   prevStage: string;
   nextStage: string;
@@ -34,19 +34,15 @@ export default function ImageMarkRight({
   const [deleteMarkerId, setDeleteMarkerId] = useState<string | null>(null);
 
   const addMarker = () => {
-    if (imageManager) {
-      const newMarkerId = imageManager.addMarker();
-      imageManager.setActiveMarker(newMarkerId);
-    } else {
-      ErrUtil.assert(false);
-    }
+    const newMarkerId = imageManager.addMarker();
+    imageManager.setActiveMarker(newMarkerId);
   };
   const openDeleteMarkerModal = (id: string) => {
     setDeleteMarkerId(id);
     onOpen();
   };
   const deleteMarker = () => {
-    if (deleteMarkerId && imageManager) {
+    if (deleteMarkerId) {
       imageManager.deleteMarker(deleteMarkerId);
       onClose();
     } else {
@@ -56,15 +52,14 @@ export default function ImageMarkRight({
 
   useEffect(() => {
     const updateMarkers = () => {
-      setMarkers(imageManager?.getMarkers() ?? []);
+      setMarkers(imageManager.getMarkers());
     };
     // 초기 설정
     updateMarkers();
-    // imageManager가 존재하면 이벤트 리스너 등록
-    imageManager?.on('markersChange', updateMarkers);
+    imageManager.on('markersChange', updateMarkers);
     // 컴포넌트 언마운트 시 이벤트 리스너 해제
     return () => {
-      imageManager?.off('markersChange', updateMarkers);
+      imageManager.off('markersChange', updateMarkers);
     };
   }, [imageManager]);
   //// end of Markers 조작
@@ -73,22 +68,22 @@ export default function ImageMarkRight({
   const [ActiveMarker, setActiveMarker] = useState<Marker | null>(null);
   useEffect(() => {
     const updateActiveMarker = () => {
-      setActiveMarker(imageManager?.getActiveMarker() ?? null);
+      setActiveMarker(imageManager.getActiveMarker());
     };
     // 초기 설정
     updateActiveMarker();
     // imageManager가 존재하면 이벤트 리스너 등록
-    imageManager?.on('activeMarkerChange', updateActiveMarker);
+    imageManager.on('activeMarkerChange', updateActiveMarker);
     // 컴포넌트 언마운트 시 이벤트 리스너 해제
     return () => {
-      imageManager?.off('activeMarkerChange', updateActiveMarker);
+      imageManager.off('activeMarkerChange', updateActiveMarker);
     };
   }, [imageManager]);
   const doSetActiveMarker = (marker: Marker | null) => {
     if (marker) {
-      imageManager?.setActiveMarker(marker.id);
+      imageManager.setActiveMarker(marker.id);
     } else {
-      imageManager?.setActiveMarker(null);
+      imageManager.setActiveMarker(null);
     }
   };
   //// end of ActiveMarker 조작

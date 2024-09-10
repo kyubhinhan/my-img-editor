@@ -37,7 +37,7 @@ export default function MarkerEditor({
     if (marker) {
       setName(marker.name);
     }
-  }, [marker?.name]);
+  }, [marker]);
 
   const onNameChange = (name: string) => {
     if (marker) {

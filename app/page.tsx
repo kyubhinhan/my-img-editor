@@ -29,7 +29,7 @@ export default function Home() {
           />
         );
       case 'mark':
-        return <ImageMarkLeft imageManager={imageManager} />;
+        return imageManager && <ImageMarkLeft imageManager={imageManager} />;
       case 'edit':
         return <ImageEditLeft />;
       case 'download':
@@ -51,12 +51,14 @@ export default function Home() {
         );
       case 'mark':
         return (
-          <ImageMarkRight
-            imageManager={imageManager}
-            setStage={setStage}
-            prevStage="upload"
-            nextStage="edit"
-          />
+          imageManager && (
+            <ImageMarkRight
+              imageManager={imageManager}
+              setStage={setStage}
+              prevStage="upload"
+              nextStage="edit"
+            />
+          )
         );
       case 'edit':
         return (

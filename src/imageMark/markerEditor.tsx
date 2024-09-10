@@ -33,6 +33,7 @@ export default function MarkerEditor({
 
   //// marker value 변경 관련
   const [name, setName] = useState('');
+  const [nameInvalid, setNameInvalid] = useState(false);
   useEffect(() => {
     if (marker) {
       setName(marker.name);
@@ -44,6 +45,7 @@ export default function MarkerEditor({
       marker.setName(name);
       setName(name);
       emitMarkerChange();
+      setNameInvalid(name == '');
     }
   };
   //// end of marker value 변경 관련
@@ -62,9 +64,11 @@ export default function MarkerEditor({
       </h3>
       <div style={{ width: '200px' }}>
         <Input
-          required
+          isRequired
           size="sm"
           label={'이름'}
+          isInvalid={nameInvalid}
+          errorMessage="이름을 입력해주세요"
           value={name}
           onValueChange={onNameChange}
         />

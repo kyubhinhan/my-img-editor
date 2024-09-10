@@ -3,6 +3,19 @@ import ErrUtil from './ErrUtil';
 import Marker from './Marker';
 import Lodash from 'lodash';
 
+const colors = [
+  '#A1D6B2',
+  '#CEDF9F',
+  '#F1F3C2',
+  '#E8B86D',
+  '#C96868',
+  '#FADFA1',
+  '#FFF4EA',
+  '#7EACB5',
+  '#7695FF',
+  '#9DBDFF',
+];
+
 class ImageManager extends EventEmitter {
   private imageFile: File;
   private markers: Marker[];
@@ -13,9 +26,9 @@ class ImageManager extends EventEmitter {
     super();
     this.imageFile = imageFile;
     this.markers = [
-      new Marker(Lodash.uniqueId(), '천장'),
-      new Marker(Lodash.uniqueId(), '벽'),
-      new Marker(Lodash.uniqueId(), '바닥'),
+      new Marker(Lodash.uniqueId(), '천장', colors[0]),
+      new Marker(Lodash.uniqueId(), '벽', colors[1]),
+      new Marker(Lodash.uniqueId(), '바닥', colors[2]),
     ];
     // 활성 마커
     this.activeMarker = this.markers[0];
@@ -88,7 +101,11 @@ class ImageManager extends EventEmitter {
     const newMarkerId = Lodash.uniqueId();
     this.markers = [
       ...this.markers,
-      new Marker(newMarkerId, `마커 번호 ${this.markers.length}`),
+      new Marker(
+        newMarkerId,
+        `마커 번호 ${this.markers.length}`,
+        colors[this.markers.length % 10]
+      ),
     ];
     this.emit('markersChange', this.markers); // 이벤트 발생
     return newMarkerId;

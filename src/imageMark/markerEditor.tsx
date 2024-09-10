@@ -34,9 +34,11 @@ export default function MarkerEditor({
   //// marker value 변경 관련
   const [name, setName] = useState('');
   const [nameInvalid, setNameInvalid] = useState(false);
+  const [color, setColor] = useState('#000000');
   useEffect(() => {
     if (marker) {
       setName(marker.name);
+      setColor(marker.color);
     }
   }, [marker]);
 
@@ -46,6 +48,14 @@ export default function MarkerEditor({
       setName(name);
       emitMarkerChange();
       setNameInvalid(name == '');
+    }
+  };
+
+  const onColorChange = (color: string) => {
+    if (marker) {
+      marker.setColor(color);
+      setColor(color);
+      emitMarkerChange();
     }
   };
   //// end of marker value 변경 관련
@@ -62,17 +72,27 @@ export default function MarkerEditor({
       >
         마커 에디터
       </h3>
-      <div style={{ width: '200px' }}>
-        <Input
-          isRequired
-          size="sm"
-          label={'이름'}
-          isInvalid={nameInvalid}
-          errorMessage="이름을 입력해주세요"
-          value={name}
-          onValueChange={onNameChange}
-        />
-      </div>
+      <section className="flex flex-row" style={{ gap: '30px' }}>
+        <div style={{ width: '200px' }}>
+          <label className="text-sm">이름</label>
+          <Input
+            size="sm"
+            isInvalid={nameInvalid}
+            errorMessage="이름을 입력해주세요"
+            value={name}
+            onValueChange={onNameChange}
+          />
+        </div>
+        <div style={{ width: '100px' }}>
+          <label className="text-sm">색상</label>
+          <Input
+            size="sm"
+            type="color"
+            value={color}
+            onValueChange={onColorChange}
+          />
+        </div>
+      </section>
     </section>
   );
 }

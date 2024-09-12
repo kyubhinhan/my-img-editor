@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import ImageManager from '../common/ImageManager';
 import Marker from '../common/Marker';
 import MarkerEditor from './markerEditor';
+import { HiMiniPaintBrush } from 'react-icons/hi2';
+import ReactDOMServer from 'react-dom/server';
 
 export default function ImageMarkLeft({
   imageManager,
@@ -42,6 +44,27 @@ export default function ImageMarkLeft({
   }, [imageManager]);
   //// end of 이미지를 canvas 위에 보여주는 것과 관련
 
+  //// cursor 관련
+  const [cursor, setCursor] = useState('auto');
+  const dataUrl = (() => {
+    const iconString = ReactDOMServer.renderToString(
+      <HiMiniPaintBrush size={32} color="red" />
+    );
+    return `data:image/svg+xml;base64,${btoa(iconString)}`;
+  })();
+
+  const onMouseEnter = () => {
+    if (activeMarker) {
+      setCursor(`url(${dataUrl}) 16 16, auto`);
+    } else {
+      setCursor('auto');
+    }
+  };
+  const onMouseLeave = () => {
+    setCursor('auto');
+  };
+  //// end of cursor 관련
+
   return (
     <section className="h-full flex flex-col items-center">
       <section style={{ height: '180px', width: '800px' }}>
@@ -50,7 +73,14 @@ export default function ImageMarkLeft({
           emitMarkerChange={emitMarkerChange}
         />
       </section>
-      <canvas width={800} height={500} ref={canvasRef}></canvas>
+      <canvas
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        style={{ cursor }}
+        width={800}
+        height={500}
+        ref={canvasRef}
+      ></canvas>
     </section>
   );
 }

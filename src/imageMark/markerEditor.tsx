@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Marker from '../common/Marker';
-import { Input } from '@nextui-org/react';
+import { Input, RadioGroup, Radio } from '@nextui-org/react';
 
 export default function MarkerEditor({
   marker,
@@ -35,10 +35,12 @@ export default function MarkerEditor({
   const [name, setName] = useState('');
   const [nameInvalid, setNameInvalid] = useState(false);
   const [color, setColor] = useState('#000000');
+  const [size, setSize] = useState('small');
   useEffect(() => {
     if (marker) {
       setName(marker.name);
       setColor(marker.color);
+      setSize(marker.size);
     }
   }, [marker]);
 
@@ -55,6 +57,14 @@ export default function MarkerEditor({
     if (marker) {
       marker.setColor(color);
       setColor(color);
+      emitMarkerChange();
+    }
+  };
+
+  const onSizeChange = (size: string) => {
+    if (marker) {
+      marker.setSize(size);
+      setSize(size);
       emitMarkerChange();
     }
   };
@@ -91,6 +101,28 @@ export default function MarkerEditor({
             value={color}
             onValueChange={onColorChange}
           />
+        </div>
+        <div className="flex flex-col " style={{ width: '300px' }}>
+          <label className="text-sm">굵기</label>
+          <RadioGroup
+            value={size}
+            onValueChange={onSizeChange}
+            orientation="horizontal"
+            classNames={{
+              base: 'grow',
+              wrapper: 'justify-items-center grow',
+            }}
+          >
+            <Radio value="small" classNames={{ label: 'text-slate-100' }}>
+              Small
+            </Radio>
+            <Radio value="medium" classNames={{ label: 'text-slate-100' }}>
+              Medium
+            </Radio>
+            <Radio value="large" classNames={{ label: 'text-slate-100' }}>
+              Large
+            </Radio>
+          </RadioGroup>
         </div>
       </section>
     </section>

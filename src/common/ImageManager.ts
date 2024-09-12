@@ -26,9 +26,9 @@ class ImageManager extends EventEmitter {
     super();
     this.imageFile = imageFile;
     this.markers = [
-      new Marker(Lodash.uniqueId(), '천장', colors[0]),
-      new Marker(Lodash.uniqueId(), '벽', colors[1]),
-      new Marker(Lodash.uniqueId(), '바닥', colors[2]),
+      new Marker(Lodash.uniqueId(), '천장', colors[0], 'small'),
+      new Marker(Lodash.uniqueId(), '벽', colors[1], 'small'),
+      new Marker(Lodash.uniqueId(), '바닥', colors[2], 'small'),
     ];
     // 활성 마커
     this.activeMarker = this.markers[0];
@@ -104,7 +104,8 @@ class ImageManager extends EventEmitter {
       new Marker(
         newMarkerId,
         `마커 번호 ${this.markers.length}`,
-        colors[this.markers.length % 10]
+        colors[this.markers.length % 10],
+        'small'
       ),
     ];
     this.emit('markersChange', this.markers); // 이벤트 발생

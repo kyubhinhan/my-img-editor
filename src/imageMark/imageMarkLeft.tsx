@@ -6,6 +6,7 @@ import Marker from '../common/Marker';
 import MarkerEditor from './markerEditor';
 import { HiMiniPaintBrush } from 'react-icons/hi2';
 import ReactDOMServer from 'react-dom/server';
+import ErrUtil from '../common/ErrUtil';
 
 export default function ImageMarkLeft({
   imageManager,
@@ -46,16 +47,28 @@ export default function ImageMarkLeft({
 
   //// cursor 관련
   const [cursor, setCursor] = useState('auto');
-  const dataUrl = (() => {
-    const iconString = ReactDOMServer.renderToString(
-      <HiMiniPaintBrush size={32} color="red" />
-    );
-    return `data:image/svg+xml;base64,${btoa(iconString)}`;
-  })();
-
   const onMouseEnter = () => {
     if (activeMarker) {
-      setCursor(`url(${dataUrl}) 16 16, auto`);
+      const size = (() => {
+        switch (activeMarker.size) {
+          case 'small':
+            return 24;
+          case 'medium':
+            return 28;
+          case 'large':
+            return 32;
+          default: {
+            ErrUtil.assert(false);
+          }
+        }
+      })();
+      const markerCursor = (() => {
+        const iconString = ReactDOMServer.renderToString(
+          <HiMiniPaintBrush size={size} color={activeMarker.color} />
+        );
+        return `data:image/svg+xml;base64,${btoa(iconString)}`;
+      })();
+      setCursor(`url(${markerCursor}) 16 16, auto`);
     } else {
       setCursor('auto');
     }

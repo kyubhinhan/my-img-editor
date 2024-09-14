@@ -21,14 +21,16 @@ class ImageManager extends EventEmitter {
   private markers: Marker[];
   private activeMarker: Marker | null;
   private markInfo: Object;
+  private categories: string[];
 
   constructor(imageFile: File) {
     super();
     this.imageFile = imageFile;
+    this.categories = ['ceiling', 'wall', 'floor'];
     this.markers = [
-      new Marker(Lodash.uniqueId(), '천장', colors[0], 'small'),
-      new Marker(Lodash.uniqueId(), '벽', colors[1], 'small'),
-      new Marker(Lodash.uniqueId(), '바닥', colors[2], 'small'),
+      new Marker(Lodash.uniqueId(), '천장', colors[0], this.categories[0]),
+      new Marker(Lodash.uniqueId(), '벽', colors[1], this.categories[1]),
+      new Marker(Lodash.uniqueId(), '바닥', colors[2], this.categories[2]),
     ];
     // 활성 마커
     this.activeMarker = this.markers[0];
@@ -50,6 +52,10 @@ class ImageManager extends EventEmitter {
       size: getFileSize(this.imageFile),
       lastModifiedDate: getFileLMD(this.imageFile),
     };
+  }
+
+  getCategories() {
+    return this.categories;
   }
 
   // 캔버스에 이미지를 표시하는 메소드
@@ -139,7 +145,7 @@ class ImageManager extends EventEmitter {
         newMarkerId,
         `마커 번호 ${this.markers.length}`,
         colors[this.markers.length % 10],
-        'small'
+        this.categories[0]
       ),
     ];
     this.emit('markersChange', this.markers); // 이벤트 발생

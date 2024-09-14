@@ -2,13 +2,13 @@ class Marker {
   public id: string;
   public name: string;
   public color: string;
-  public size: string;
+  public category: string;
 
-  constructor(id: string, name: string, color: string, size: string) {
+  constructor(id: string, name: string, color: string, category: string) {
     this.id = id;
     this.name = name;
     this.color = color;
-    this.size = size;
+    this.category = category;
   }
 
   setName(newName: string) {
@@ -19,8 +19,8 @@ class Marker {
     this.color = newColor;
   }
 
-  setSize(newSize: string) {
-    this.size = newSize;
+  setCategory(newCategory: string) {
+    this.category = newCategory;
   }
 }
 

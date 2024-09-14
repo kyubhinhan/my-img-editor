@@ -35,12 +35,12 @@ export default function MarkerEditor({
   const [name, setName] = useState('');
   const [nameInvalid, setNameInvalid] = useState(false);
   const [color, setColor] = useState('#000000');
-  const [size, setSize] = useState('small');
+  const [category, setCategory] = useState('ceiling');
   useEffect(() => {
     if (marker) {
       setName(marker.name);
       setColor(marker.color);
-      setSize(marker.size);
+      setCategory(marker.category);
     }
   }, [marker]);
 
@@ -61,10 +61,10 @@ export default function MarkerEditor({
     }
   };
 
-  const onSizeChange = (size: string) => {
+  const onCategoryChange = (category: string) => {
     if (marker) {
-      marker.setSize(size);
-      setSize(size);
+      marker.setCategory(category);
+      setCategory(category);
       emitMarkerChange();
     }
   };
@@ -103,24 +103,24 @@ export default function MarkerEditor({
           />
         </div>
         <div className="flex flex-col " style={{ width: '300px' }}>
-          <label className="text-sm">굵기</label>
+          <label className="text-sm">종류</label>
           <RadioGroup
-            value={size}
-            onValueChange={onSizeChange}
+            value={category}
+            onValueChange={onCategoryChange}
             orientation="horizontal"
             classNames={{
               base: 'grow',
               wrapper: 'justify-items-center grow',
             }}
           >
-            <Radio value="small" classNames={{ label: 'text-slate-100' }}>
-              Small
+            <Radio value="ceiling" classNames={{ label: 'text-slate-100' }}>
+              천장
             </Radio>
-            <Radio value="medium" classNames={{ label: 'text-slate-100' }}>
-              Medium
+            <Radio value="wall" classNames={{ label: 'text-slate-100' }}>
+              벽
             </Radio>
-            <Radio value="large" classNames={{ label: 'text-slate-100' }}>
-              Large
+            <Radio value="floor" classNames={{ label: 'text-slate-100' }}>
+              바닥
             </Radio>
           </RadioGroup>
         </div>

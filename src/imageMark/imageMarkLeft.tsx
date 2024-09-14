@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, MouseEventHandler } from 'react';
 import ImageManager from '../common/ImageManager';
 import Marker from '../common/Marker';
 import MarkerEditor from './markerEditor';
 import { HiMiniPaintBrush } from 'react-icons/hi2';
 import ReactDOMServer from 'react-dom/server';
 import ErrUtil from '../common/ErrUtil';
+import { on } from 'events';
 
 export default function ImageMarkLeft({
   imageManager,
@@ -15,6 +16,9 @@ export default function ImageMarkLeft({
 }) {
   //// activeMarker 관련
   const [activeMarker, setActiveMarker] = useState<Marker | null>(null);
+  const emitMarkerChange = () => {
+    imageManager.emitChangeMarker();
+  };
   useEffect(() => {
     const updateActiveMarker = () => {
       setActiveMarker(imageManager.getActiveMarker() ?? null);
@@ -30,17 +34,11 @@ export default function ImageMarkLeft({
   }, [imageManager]);
   //// end of activeMarker 관련
 
-  //// marker edit 관련
-  const emitMarkerChange = () => {
-    imageManager.emitChangeMarker();
-  };
-  //// end of marker edit 관련
-
   //// 이미지를 canvas 위에 보여주는 것과 관련
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     if (canvasRef.current) {
-      imageManager.showImage(canvasRef.current);
+      imageManager.showImage(canvasRef.current, true);
     }
   }, [imageManager]);
   //// end of 이미지를 canvas 위에 보여주는 것과 관련
@@ -78,6 +76,16 @@ export default function ImageMarkLeft({
   };
   //// end of cursor 관련
 
+  //// canvas 위에 마킹하는 것 관련
+  const onMouseMove = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    // activeMarker가 있고,왼쪽 버튼을 누른채 움직인 경우 마크를 함
+    if (canvasRef.current && activeMarker && event.buttons == 1) {
+      imageManager.markCanvas(canvasRef.current, event);
+    }
+  };
+
+  //// end of canvas 위에 마킹하는 것 관련
+
   return (
     <section className="h-full flex flex-col items-center">
       <section style={{ height: '180px', width: '800px' }}>
@@ -89,6 +97,7 @@ export default function ImageMarkLeft({
       <canvas
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
+        onMouseMove={onMouseMove}
         style={{ cursor }}
         width={800}
         height={500}

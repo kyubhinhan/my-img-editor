@@ -53,7 +53,7 @@ class ImageManager extends EventEmitter {
   }
 
   // 캔버스에 이미지를 표시하는 메소드
-  showImage(canvas: HTMLCanvasElement): void {
+  showImage(canvas: HTMLCanvasElement, inMark?: boolean): void {
     const ctx = canvas.getContext('2d');
     if (!ctx) {
       console.error('Canvas context not found!');
@@ -64,6 +64,10 @@ class ImageManager extends EventEmitter {
     const url = URL.createObjectURL(this.imageFile);
 
     img.onload = () => {
+      // mark 단계에서는 이미지를 약간 불투명하게 그림
+      if (inMark) {
+        ctx.globalAlpha = 0.4;
+      }
       // 이미지 그리기
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       // 메모리 해제
@@ -71,6 +75,36 @@ class ImageManager extends EventEmitter {
     };
 
     img.src = url;
+  }
+
+  // 캔버스에 마커로 표시하는 메소드
+  markCanvas(
+    canvas: HTMLCanvasElement,
+    event: React.MouseEvent<HTMLCanvasElement>
+  ): void {
+    if (this.activeMarker == null) {
+      ErrUtil.assert(false);
+      return;
+    }
+    const ctx = canvas.getContext('2d');
+    if (ctx == null) {
+      ErrUtil.assert(false);
+      return;
+    }
+
+    // 원 그리기
+    ctx.beginPath(); // 새로운 경로 시작
+
+    // target 요소의 위치와 크기를 가져옴
+    const rect = canvas.getBoundingClientRect();
+    // target 요소 내에서의 상대적인 마우스 좌표 계산
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    ctx.fillRect(x, y, 10, 10); // x좌표 100, y좌표 100, 반지름 2, 0부터 2*PI 라디안까지 원 그리기
+    ctx.fillStyle = this.activeMarker.color; // 채우기 색상을 빨간색으로 설정
+    ctx.fill(); // 경로를 채우기
+    ctx.closePath(); // 경로 닫기
   }
 
   getActiveMarker() {

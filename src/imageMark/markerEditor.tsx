@@ -3,6 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import Marker from '../common/Marker';
 import { Input, RadioGroup, Radio } from '@nextui-org/react';
+import { Button } from '@nextui-org/react';
+import ErrUtil from '../common/ErrUtil';
+import FormItem from '../common/form/FormItem';
 
 export default function MarkerEditor({
   marker,
@@ -18,10 +21,11 @@ export default function MarkerEditor({
     overflow: 'hidden',
     whiteSpace: 'noWrap',
     transition: 'height 0.5s ease, padding 0.5s ease',
+    gap: '25px',
   };
   const showMarker = {
     ...commonStyle,
-    height: '150px',
+    height: '200px',
     padding: '12px',
   };
   const hideMarker = {
@@ -36,6 +40,7 @@ export default function MarkerEditor({
   const [nameInvalid, setNameInvalid] = useState(false);
   const [color, setColor] = useState('#000000');
   const [category, setCategory] = useState('ceiling');
+
   useEffect(() => {
     if (marker) {
       setName(marker.name);
@@ -68,63 +73,68 @@ export default function MarkerEditor({
       emitMarkerChange();
     }
   };
+
+  const onChangeSection = (type: string) => {
+    if (type == 'create') {
+    } else if (type == 'delete') {
+    } else {
+      ErrUtil.assert(false);
+    }
+  };
   //// end of marker value 변경 관련
 
   return (
-    <section style={marker ? showMarker : hideMarker}>
+    <section className="flex flex-col" style={marker ? showMarker : hideMarker}>
       <h3
         style={{
           fontWeight: 600,
           fontSize: '1.2rem',
           lineHeight: '1.5rem',
-          marginBottom: '2rem',
         }}
       >
         마커 에디터
       </h3>
-      <section className="flex flex-row" style={{ gap: '30px' }}>
-        <div style={{ width: '200px' }}>
-          <label className="text-sm">이름</label>
-          <Input
-            size="sm"
-            isInvalid={nameInvalid}
-            errorMessage="이름을 입력해주세요"
-            value={name}
-            onValueChange={onNameChange}
-          />
-        </div>
-        <div style={{ width: '100px' }}>
-          <label className="text-sm">색상</label>
-          <Input
-            size="sm"
-            type="color"
-            value={color}
-            onValueChange={onColorChange}
-          />
-        </div>
-        <div className="flex flex-col " style={{ width: '300px' }}>
-          <label className="text-sm">종류</label>
-          <RadioGroup
-            value={category}
-            onValueChange={onCategoryChange}
-            orientation="horizontal"
-            classNames={{
-              base: 'grow',
-              wrapper: 'justify-items-center grow',
-            }}
-          >
-            <Radio value="ceiling" classNames={{ label: 'text-slate-100' }}>
-              천장
-            </Radio>
-            <Radio value="wall" classNames={{ label: 'text-slate-100' }}>
-              벽
-            </Radio>
-            <Radio value="floor" classNames={{ label: 'text-slate-100' }}>
-              바닥
-            </Radio>
-          </RadioGroup>
-        </div>
+      <section className="flex flex-row" style={{ gap: '20px' }}>
+        <FormItem
+          width="200px"
+          label="이름"
+          labelPosition="top"
+          type="textBox"
+          value={name}
+          onValueChange={onNameChange}
+        />
+        <FormItem
+          width="60px"
+          label="색상"
+          labelPosition="top"
+          type="colorBox"
+          value={color}
+          onValueChange={onColorChange}
+        />
+        <FormItem
+          width="180px"
+          label="종류"
+          labelPosition="top"
+          type="radioGroup"
+          value={category}
+          onValueChange={onCategoryChange}
+          editorPorps={{
+            items: [
+              { value: 'ceiling', text: '천장' },
+              { value: 'wall', text: '벽' },
+              { value: 'floor', text: '바닥' },
+            ],
+          }}
+        />
       </section>
+      <div className="flex flex-row justify-end" style={{ gap: '10px' }}>
+        <Button size={'sm'} style={{ width: '100px' }}>
+          되돌리기
+        </Button>
+        <Button size={'sm'} style={{ width: '100px' }}>
+          저장
+        </Button>
+      </div>
     </section>
   );
 }

@@ -65,7 +65,7 @@ export default function ImageMarkLeft({
 
   return (
     <section className="h-full flex flex-col items-center">
-      <section style={{ height: '180px', width: '800px' }}>
+      <section style={{ height: '250px', width: '800px' }}>
         <MarkerEditor
           marker={activeMarker}
           emitMarkerChange={emitMarkerChange}

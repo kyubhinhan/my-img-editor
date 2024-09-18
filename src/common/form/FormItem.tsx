@@ -14,24 +14,26 @@ const formItems = {
   pointerBox: PointerBox,
 };
 
-export default function FormItem({
+type FormItemProps<T> = {
+  type: keyof typeof formItems;
+  label: string;
+  labelPosition: string;
+  value: T;
+  onValueChange: (value: T) => void;
+  width?: string;
+  editorProps?: any;
+};
+
+export default function FormItem<T>({
   type,
   label,
   labelPosition,
   value,
   onValueChange,
   width,
-  editorPorps,
-}: {
-  type: keyof typeof formItems;
-  label: string;
-  labelPosition: string;
-  value: any;
-  onValueChange: (value: any) => void;
-  width?: string;
-  editorPorps?: any;
-}) {
-  const Editor = formItems[type];
+  editorProps,
+}: FormItemProps<T>) {
+  const Editor = formItems[type] as React.ComponentType<any>;
   const wrapperClass = `flex ${labelPosition == 'top' ? 'flex-col' : 'flex-row'}`;
   const labelClass = 'font-semibold text-base';
 
@@ -41,7 +43,7 @@ export default function FormItem({
       <Editor
         value={value}
         onValueChange={onValueChange}
-        editorProps={editorPorps}
+        editorProps={editorProps}
       />
     </div>
   );

@@ -7,6 +7,8 @@ import { Button } from '@nextui-org/react';
 import ErrUtil from '../common/ErrUtil';
 import FormItem from '../common/form/FormItem';
 
+import { Pointer } from '../common/form/PointerBox';
+
 export default function MarkerEditor({
   marker,
   emitMarkerChange,
@@ -40,6 +42,10 @@ export default function MarkerEditor({
   const [nameInvalid, setNameInvalid] = useState(false);
   const [color, setColor] = useState('#000000');
   const [category, setCategory] = useState('ceiling');
+  const [pointer, setPointer] = useState<Pointer>({
+    x: 100,
+    y: 200,
+  });
 
   useEffect(() => {
     if (marker) {
@@ -72,6 +78,10 @@ export default function MarkerEditor({
       setCategory(category);
       emitMarkerChange();
     }
+  };
+
+  const onPointerChange = (pointer: Pointer) => {
+    setPointer(pointer);
   };
 
   const onChangeSection = (type: string) => {
@@ -118,12 +128,23 @@ export default function MarkerEditor({
           type="radioGroup"
           value={category}
           onValueChange={onCategoryChange}
-          editorPorps={{
+          editorProps={{
             items: [
               { value: 'ceiling', text: '천장' },
               { value: 'wall', text: '벽' },
               { value: 'floor', text: '바닥' },
             ],
+          }}
+        />
+        <FormItem
+          type="pointerBox"
+          label="포인터"
+          labelPosition="top"
+          value={pointer}
+          onValueChange={onPointerChange}
+          editorProps={{
+            xMax: 400,
+            yMax: 400,
           }}
         />
       </section>

@@ -5,17 +5,9 @@ import CommonRightComponent from '@/src/common/CommonRightComponent';
 import ImageManager from '../common/ImageManager';
 import MarkerItem from './markerItem';
 import Marker from '../common/Marker';
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  useDisclosure,
-  ScrollShadow,
-} from '@nextui-org/react';
+import { Button, ScrollShadow } from '@nextui-org/react';
 import ErrUtil from '../common/ErrUtil';
+import SimplePopup from '../common/SimplePopup';
 
 export default function ImageMarkRight({
   imageManager,
@@ -30,25 +22,37 @@ export default function ImageMarkRight({
 }) {
   //// Markers 조작
   const [markers, setMarkers] = useState<Marker[]>([]);
-  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
+  const [isOpen, setIsOpen] = useState(false);
   const [deleteMarkerId, setDeleteMarkerId] = useState<string | null>(null);
 
   const addMarker = () => {
     const newMarkerId = imageManager.addMarker();
     imageManager.setActiveMarker(newMarkerId);
   };
+
   const openDeleteMarkerModal = (id: string) => {
     setDeleteMarkerId(id);
-    onOpen();
+    setIsOpen(true);
   };
-  const deleteMarker = () => {
-    if (deleteMarkerId) {
-      imageManager.deleteMarker(deleteMarkerId);
-      onClose();
-    } else {
-      ErrUtil.assert(false);
-    }
-  };
+
+  const deletePopupButtons = [
+    {
+      id: 'delete',
+      text: '삭제',
+      color: 'danger' as 'danger',
+      onClick: () => {
+        if (deleteMarkerId) {
+          imageManager.deleteMarker(deleteMarkerId);
+        } else {
+          ErrUtil.assert(false);
+        }
+      },
+    },
+    {
+      id: 'close',
+      text: '닫기',
+    },
+  ];
 
   useEffect(() => {
     const updateMarkers = () => {
@@ -116,22 +120,14 @@ export default function ImageMarkRight({
           ))}
         </ScrollShadow>
       </div>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent>
-          <ModalHeader className="flex flex-col gap-1 text-black">
-            알림
-          </ModalHeader>
-          <ModalBody className="text-black">
-            <p>정말 삭제하시겠습니까?</p>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="danger" onPress={deleteMarker}>
-              삭제
-            </Button>
-            <Button onPress={onClose}>닫기</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+
+      <SimplePopup
+        visible={isOpen}
+        updateVisible={setIsOpen}
+        title="알림"
+        message="정말 삭제하시겠습니까?"
+        buttons={deletePopupButtons}
+      />
     </CommonRightComponent>
   );
 }

@@ -48,7 +48,12 @@ export default function SimplePopup({
   };
 
   return (
-    <Modal isOpen={visible}>
+    <Modal
+      isOpen={visible}
+      onOpenChange={(isOpen) => {
+        updateVisible(isOpen);
+      }}
+    >
       <ModalContent>
         <ModalHeader className="text-black">{title}</ModalHeader>
         <ModalBody className="text-black">

@@ -168,8 +168,22 @@ class ImageManager extends EventEmitter {
 
   // marker 수정 이벤트를 올림
   emitChangeMarker() {
+    // 마커 업데이트
     this.markers = [...this.markers];
     this.emit('markersChange', this.markers);
+
+    // activeMarker 업데이트 (화면이 갱신되도록 일단 새걸로 넣었는데, 이거 갱신을 이런 식으로 하면 안 될 것 같음..)
+    if (this.activeMarker) {
+      this.activeMarker = new Marker(
+        this.activeMarker.id,
+        this.activeMarker.name,
+        this.activeMarker.color,
+        this.activeMarker.category
+      );
+      this.emit('activeMarkerChange', this.activeMarker);
+    } else {
+      ErrUtil.assert(false);
+    }
   }
 }
 

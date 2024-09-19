@@ -1,12 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Marker from '../common/Marker';
-import { Input, RadioGroup, Radio } from '@nextui-org/react';
 import { Button } from '@nextui-org/react';
 import ErrUtil from '../common/ErrUtil';
 import FormItem from '../common/form/FormItem';
-
 import { Pointer } from '../common/form/PointerBox';
 
 export default function MarkerEditor({
@@ -42,13 +40,19 @@ export default function MarkerEditor({
   const [color, setColor] = useState('#000000');
   const [category, setCategory] = useState('ceiling');
   const [pointer, setPointer] = useState<Pointer>(null);
+  const hasChanges = useMemo(() => {
+    if (marker == null) return false;
+    else
+      return (
+        marker.name != name ||
+        marker.color != color ||
+        marker.category != category
+      );
+  }, [name, color, category, marker]);
 
   useEffect(() => {
     if (marker) {
-      setName(marker.name);
-      setColor(marker.color);
-      setCategory(marker.category);
-      setPointer(null);
+      setInitialState(marker);
     }
   }, [marker]);
 
@@ -68,6 +72,14 @@ export default function MarkerEditor({
     setPointer(pointer);
   };
 
+  const onRevertButtonClick = () => {
+    if (marker) {
+      setInitialState(marker);
+    } else {
+      ErrUtil.assert(false);
+    }
+  };
+
   const onSaveButtonClick = () => {
     if (marker) {
       marker.setName(name);
@@ -77,6 +89,13 @@ export default function MarkerEditor({
     } else {
       ErrUtil.assert(false);
     }
+  };
+
+  const setInitialState = (marker: Marker) => {
+    setName(marker.name);
+    setColor(marker.color);
+    setCategory(marker.category);
+    setPointer(null);
   };
   //// end of marker value 변경 관련
 
@@ -136,12 +155,18 @@ export default function MarkerEditor({
         />
       </section>
       <div className="flex flex-row justify-end" style={{ gap: '10px' }}>
-        <Button size={'sm'} style={{ width: '100px' }}>
+        <Button
+          size={'sm'}
+          style={{ width: '100px' }}
+          isDisabled={!hasChanges}
+          onClick={onRevertButtonClick}
+        >
           되돌리기
         </Button>
         <Button
           size={'sm'}
           style={{ width: '100px' }}
+          isDisabled={!hasChanges}
           onClick={onSaveButtonClick}
         >
           저장

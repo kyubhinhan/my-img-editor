@@ -60,7 +60,6 @@ export default function ImageMarkLeft({
       imageManager.markCanvas(canvasRef.current, event);
     }
   };
-
   //// end of canvas 위에 마킹하는 것 관련
 
   return (

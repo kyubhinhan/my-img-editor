@@ -11,10 +11,10 @@ import { Pointer } from '../common/form/PointerBox';
 
 export default function MarkerEditor({
   marker,
-  emitMarkerChange,
+  saveMarker,
 }: {
   marker: Marker | null;
-  emitMarkerChange: () => void;
+  saveMarker: () => void;
 }) {
   //// marker style 관련
   const commonStyle = {
@@ -23,7 +23,7 @@ export default function MarkerEditor({
     overflow: 'hidden',
     whiteSpace: 'noWrap',
     transition: 'height 0.5s ease, padding 0.5s ease',
-    gap: '25px',
+    gap: '20px',
   };
   const showMarker = {
     ...commonStyle,
@@ -39,54 +39,41 @@ export default function MarkerEditor({
 
   //// marker value 변경 관련
   const [name, setName] = useState('');
-  const [nameInvalid, setNameInvalid] = useState(false);
   const [color, setColor] = useState('#000000');
   const [category, setCategory] = useState('ceiling');
-  const [pointer, setPointer] = useState<Pointer>({
-    x: 100,
-    y: 200,
-  });
+  const [pointer, setPointer] = useState<Pointer>(null);
 
   useEffect(() => {
     if (marker) {
       setName(marker.name);
       setColor(marker.color);
       setCategory(marker.category);
+      setPointer(null);
     }
   }, [marker]);
 
   const onNameChange = (name: string) => {
-    if (marker) {
-      marker.setName(name);
-      setName(name);
-      emitMarkerChange();
-      setNameInvalid(name == '');
-    }
+    setName(name);
   };
 
   const onColorChange = (color: string) => {
-    if (marker) {
-      marker.setColor(color);
-      setColor(color);
-      emitMarkerChange();
-    }
+    setColor(color);
   };
 
   const onCategoryChange = (category: string) => {
-    if (marker) {
-      marker.setCategory(category);
-      setCategory(category);
-      emitMarkerChange();
-    }
+    setCategory(category);
   };
 
   const onPointerChange = (pointer: Pointer) => {
     setPointer(pointer);
   };
 
-  const onChangeSection = (type: string) => {
-    if (type == 'create') {
-    } else if (type == 'delete') {
+  const onSaveButtonClick = () => {
+    if (marker) {
+      marker.setName(name);
+      marker.setColor(color);
+      marker.setCategory(category);
+      saveMarker();
     } else {
       ErrUtil.assert(false);
     }
@@ -104,7 +91,7 @@ export default function MarkerEditor({
       >
         마커 에디터
       </h3>
-      <section className="flex flex-row" style={{ gap: '20px' }}>
+      <section className="flex flex-row gap-5">
         <FormItem
           width="200px"
           label="이름"
@@ -152,7 +139,11 @@ export default function MarkerEditor({
         <Button size={'sm'} style={{ width: '100px' }}>
           되돌리기
         </Button>
-        <Button size={'sm'} style={{ width: '100px' }}>
+        <Button
+          size={'sm'}
+          style={{ width: '100px' }}
+          onClick={onSaveButtonClick}
+        >
           저장
         </Button>
       </div>

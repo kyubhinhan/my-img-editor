@@ -12,7 +12,7 @@ export default function ImageMarkLeft({
 }) {
   //// activeMarker 관련
   const [activeMarker, setActiveMarker] = useState<Marker | null>(null);
-  const emitMarkerChange = () => {
+  const saveMarker = () => {
     imageManager.emitChangeMarker();
   };
   useEffect(() => {
@@ -66,10 +66,7 @@ export default function ImageMarkLeft({
   return (
     <section className="h-full flex flex-col items-center">
       <section style={{ height: '250px', width: '800px' }}>
-        <MarkerEditor
-          marker={activeMarker}
-          emitMarkerChange={emitMarkerChange}
-        />
+        <MarkerEditor marker={activeMarker} saveMarker={saveMarker} />
       </section>
       <canvas
         onMouseEnter={onMouseEnter}

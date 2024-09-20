@@ -6,53 +6,61 @@ import ImageManager from '../common/ImageManager';
 import MarkerItem from './markerItem';
 import Marker from '../common/Marker';
 import { Button, ScrollShadow } from '@nextui-org/react';
-import ErrUtil from '../common/ErrUtil';
-import SimplePopup from '../common/SimplePopup';
+import { ButtonProps } from '@/src/common/SimplePopup';
 
-export default function ImageMarkRight({
-  imageManager,
-  setStage,
-  prevStage,
-  nextStage,
-}: {
+type PropsType = {
   imageManager: ImageManager;
+  showSimplePopup: (
+    title: string,
+    message: string,
+    buttons: ButtonProps[]
+  ) => Promise<unknown>;
   setStage: Dispatch<SetStateAction<string>>;
   prevStage: string;
   nextStage: string;
-}) {
+};
+
+export default function ImageMarkRight({
+  imageManager,
+  showSimplePopup,
+  setStage,
+  prevStage,
+  nextStage,
+}: PropsType) {
   //// Markers 조작
   const [markers, setMarkers] = useState<Marker[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [deleteMarkerId, setDeleteMarkerId] = useState<string | null>(null);
 
-  const addMarker = () => {
-    const newMarkerId = imageManager.addMarker();
-    imageManager.setActiveMarker(newMarkerId);
-  };
+  const onAddButtonClick = () => {
+    const addMarker = () => {
+      const newMarkerId = imageManager.addMarker();
+      imageManager.setActiveMarker(newMarkerId);
+    };
 
-  const openDeleteMarkerModal = (id: string) => {
-    setDeleteMarkerId(id);
-    setIsOpen(true);
-  };
-
-  const deletePopupButtons = [
-    {
-      id: 'delete',
-      text: '삭제',
-      color: 'danger' as 'danger',
-      onClick: () => {
-        if (deleteMarkerId) {
-          imageManager.deleteMarker(deleteMarkerId);
-        } else {
-          ErrUtil.assert(false);
+    const activeMarker = imageManager.getActiveMarker();
+    if (activeMarker == null || activeMarker.hasChanges == false) {
+      addMarker();
+    } else {
+      showSimplePopup(
+        '알림',
+        '변경된 사항이 있습니다. 저장하지 않고 진행하시겠습니까?',
+        ['ok', 'cancel']
+      ).then((id) => {
+        if (id == 'ok') {
+          addMarker();
         }
-      },
-    },
-    {
-      id: 'close',
-      text: '닫기',
-    },
-  ];
+      });
+    }
+  };
+
+  const openDeleteMarkerModal = (markerId: string) => {
+    showSimplePopup('알림', '정말로 삭제하시겠습니까?', ['ok', 'cancel']).then(
+      (id) => {
+        if (id == 'ok') {
+          imageManager.deleteMarker(markerId);
+        }
+      }
+    );
+  };
 
   useEffect(() => {
     const updateMarkers = () => {
@@ -83,13 +91,32 @@ export default function ImageMarkRight({
       imageManager.off('activeMarkerChange', updateActiveMarker);
     };
   }, [imageManager]);
-  const doSetActiveMarker = (marker: Marker | null) => {
-    if (marker) {
-      imageManager.setActiveMarker(marker.id);
+
+  const onSetActiveMarker = (marker: Marker | null) => {
+    const doSetActiveMarker = (marker: Marker | null) => {
+      if (marker) {
+        imageManager.setActiveMarker(marker.id);
+      } else {
+        imageManager.setActiveMarker(null);
+      }
+    };
+
+    const activeMarker = imageManager.getActiveMarker();
+    if (activeMarker == null || activeMarker.hasChanges == false) {
+      doSetActiveMarker(marker);
     } else {
-      imageManager.setActiveMarker(null);
+      showSimplePopup(
+        '알림',
+        '변경된 사항이 있습니다. 저장하지 않고 진행하시겠습니까?',
+        ['ok', 'cancel']
+      ).then((id) => {
+        if (id == 'ok') {
+          doSetActiveMarker(marker);
+        }
+      });
     }
   };
+
   //// end of ActiveMarker 조작
 
   return (
@@ -102,7 +129,11 @@ export default function ImageMarkRight({
       disableNextButton={false}
     >
       <div className="flex flex-col" style={{ gap: '20px' }}>
-        <Button size={'sm'} style={{ width: '100px' }} onClick={addMarker}>
+        <Button
+          size={'sm'}
+          style={{ width: '100px' }}
+          onClick={onAddButtonClick}
+        >
           마커 추가
         </Button>
         <ScrollShadow
@@ -114,20 +145,12 @@ export default function ImageMarkRight({
               key={marker.id}
               marker={marker}
               isActive={ActiveMarker?.id == marker.id}
-              setActiveMarker={doSetActiveMarker}
+              setActiveMarker={onSetActiveMarker}
               deleteMarker={openDeleteMarkerModal}
             />
           ))}
         </ScrollShadow>
       </div>
-
-      <SimplePopup
-        visible={isOpen}
-        updateVisible={setIsOpen}
-        title="알림"
-        message="정말 삭제하시겠습니까?"
-        buttons={deletePopupButtons}
-      />
     </CommonRightComponent>
   );
 }

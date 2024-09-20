@@ -52,6 +52,12 @@ export default function MarkerEditor({
 
   useEffect(() => {
     if (marker) {
+      marker.setHasChanges(hasChanges);
+    }
+  }, [hasChanges]);
+
+  useEffect(() => {
+    if (marker) {
       setInitialState(marker);
     }
   }, [marker]);

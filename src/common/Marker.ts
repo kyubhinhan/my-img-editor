@@ -1,9 +1,15 @@
+type Pointer = {
+  x: number;
+  y: number;
+};
+
 class Marker {
   public id: string;
   public name: string;
   public color: string;
   public category: string;
   public hasChanges: boolean;
+  public pointers: Pointer[];
 
   constructor(id: string, name: string, color: string, category: string) {
     this.id = id;
@@ -11,6 +17,7 @@ class Marker {
     this.color = color;
     this.category = category;
     this.hasChanges = false;
+    this.pointers = [];
   }
 
   setName(newName: string) {
@@ -27,6 +34,10 @@ class Marker {
 
   setHasChanges(hasChanges: boolean) {
     this.hasChanges = hasChanges;
+  }
+
+  addPointer(x: number, y: number) {
+    this.pointers.push({ x, y });
   }
 }
 

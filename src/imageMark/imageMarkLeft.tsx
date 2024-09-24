@@ -34,30 +34,23 @@ export default function ImageMarkLeft({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     if (canvasRef.current) {
-      imageManager.showImage(canvasRef.current, true);
+      imageManager.showImage(canvasRef.current);
     }
   }, [imageManager]);
   //// end of 이미지를 canvas 위에 보여주는 것과 관련
 
-  //// cursor 관련
-  const [cursor, setCursor] = useState('auto');
-  const onMouseEnter = () => {
-    if (activeMarker) {
-      setCursor(`auto`);
-    } else {
-      setCursor('auto');
-    }
-  };
-  const onMouseLeave = () => {
-    setCursor('auto');
-  };
-  //// end of cursor 관련
-
   //// canvas 위에 마킹하는 것 관련
-  const onMouseMove = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    // activeMarker가 있고,왼쪽 버튼을 누른채 움직인 경우 마크를 함
-    if (canvasRef.current && activeMarker && event.buttons == 1) {
-      imageManager.markCanvas(canvasRef.current, event);
+  const onMouseDown = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    // activeMarker가 있고, canvas를 클릭한 경우 해당 위치에 포인터를 추가해주고,
+    // 이를 캔버스 위에 그려줌
+    if (canvasRef.current && activeMarker) {
+      // target 요소의 위치와 크기를 가져옴
+      const rect = canvasRef.current.getBoundingClientRect();
+      // target 요소 내에서의 상대적인 마우스 좌표 계산
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      activeMarker.addPointer(x, y);
+      imageManager.drawMarker(canvasRef.current);
     }
   };
   //// end of canvas 위에 마킹하는 것 관련
@@ -68,10 +61,7 @@ export default function ImageMarkLeft({
         <MarkerEditor marker={activeMarker} saveMarker={saveMarker} />
       </section>
       <canvas
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
-        onMouseMove={onMouseMove}
-        style={{ cursor }}
+        onMouseDown={onMouseDown}
         width={800}
         height={500}
         ref={canvasRef}

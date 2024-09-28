@@ -58,7 +58,18 @@ export default function MarkerEditor({
 
   useEffect(() => {
     if (marker) {
+      const updateActivePointer = () => {
+        setPointer(marker.getActivePointer() ?? null);
+      };
+      // 초기 설정
+      updateActivePointer();
       setInitialState(marker);
+      // marker가 존재하면 이벤트 리스너 등록
+      marker.on('activePointerChange', updateActivePointer);
+      // 컴포넌트 언마운트 시 이벤트 리스너 해제
+      return () => {
+        marker.off('activePointerChange', updateActivePointer);
+      };
     }
   }, [marker]);
 

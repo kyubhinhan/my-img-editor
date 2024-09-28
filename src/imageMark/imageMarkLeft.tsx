@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, MouseEventHandler } from 'react';
 import ImageManager from '../common/ImageManager';
 import Marker from '../common/Marker';
 import MarkerEditor from './markerEditor';
+import ErrUtil from '../common/ErrUtil';
 
 export default function ImageMarkLeft({
   imageManager,
@@ -39,18 +40,27 @@ export default function ImageMarkLeft({
   }, [imageManager]);
   //// end of 이미지를 canvas 위에 보여주는 것과 관련
 
-  //// canvas 위에 마킹하는 것 관련
+  //// canvas 위에 포인터를 추가하는 것 관련
   const onMouseDown = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    // activeMarker가 있고, canvas를 클릭한 경우 해당 위치에 포인터를 추가해주고,
-    // 이를 캔버스 위에 그려줌
-    if (canvasRef.current && activeMarker) {
-      // target 요소의 위치와 크기를 가져옴
-      const rect = canvasRef.current.getBoundingClientRect();
+    if (!canvasRef.current || !activeMarker) {
+      ErrUtil.assert(false);
+    } else {
       // target 요소 내에서의 상대적인 마우스 좌표 계산
+      const rect = canvasRef.current.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
-      activeMarker.addPointer(x, y);
-      imageManager.drawMarker(canvasRef.current);
+
+      // 해당 위치에 기존의 포인터가 있는지 파악
+      const pointer = activeMarker.findPointer(x, y);
+      if (pointer != null) {
+        activeMarker.setActivePointer(pointer);
+      } else {
+        // 기존 포인터가 없었을 경우, 새로운 포인터를 만들고, 이 포인터를 activePointer로 설정
+        // 그 후에 canvas에 marker들을 다시 그려줌
+        const newPointer = activeMarker.addPointer(x, y);
+        activeMarker.setActivePointer(newPointer);
+        imageManager.drawMarker(canvasRef.current);
+      }
     }
   };
   //// end of canvas 위에 마킹하는 것 관련

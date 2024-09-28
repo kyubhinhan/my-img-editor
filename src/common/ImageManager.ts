@@ -105,13 +105,41 @@ class ImageManager extends EventEmitter {
     ctx.drawImage(this.imageElement, 0, 0, canvas.width, canvas.height);
     ctx.filter = 'none';
     this.markers.forEach((marker) => {
+      // 해당 위치에 점을 먼저 찍어줌
       marker.pointers.forEach((pointer) => {
         ctx.beginPath();
-        ctx.arc(pointer.x, pointer.y, 10, 0, Math.PI * 2);
+        ctx.arc(pointer.x, pointer.y, 8, 0, Math.PI * 2);
         ctx.fillStyle = marker.color;
         ctx.fill();
-        ctx.closePath();
       });
+
+      // 해당 점들을 이어줌
+      ctx.beginPath();
+      marker.pointers.forEach((pointer, index) => {
+        if (index == 0) {
+          ctx.moveTo(pointer.x, pointer.y);
+        } else {
+          ctx.lineTo(pointer.x, pointer.y);
+        }
+      });
+      ctx.closePath();
+      ctx.strokeStyle = marker.color;
+      ctx.stroke();
+
+      // 점들을 이은 부분을 채워줌
+      ctx.beginPath();
+      marker.pointers.forEach((pointer, index) => {
+        if (index == 0) {
+          ctx.moveTo(pointer.x, pointer.y);
+        } else {
+          ctx.lineTo(pointer.x, pointer.y);
+        }
+      });
+      ctx.closePath();
+      ctx.globalAlpha = 0.3;
+      ctx.fillStyle = marker.color;
+      ctx.fill();
+      ctx.globalAlpha = 1;
     });
   }
 

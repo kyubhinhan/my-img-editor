@@ -34,7 +34,7 @@ export default function ImageMarkLeft({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     if (canvasRef.current) {
-      imageManager.showImage(canvasRef.current);
+      imageManager.showImage(canvasRef.current, true);
     }
   }, [imageManager]);
   //// end of 이미지를 canvas 위에 보여주는 것과 관련

@@ -61,7 +61,7 @@ class ImageManager extends EventEmitter {
   }
 
   // 캔버스에 이미지를 표시하는 메소드
-  showImage(canvas: HTMLCanvasElement): void {
+  showImage(canvas: HTMLCanvasElement, inMark: boolean): void {
     const ctx = canvas.getContext('2d');
     if (!ctx) {
       console.error('Canvas context not found!');
@@ -72,8 +72,18 @@ class ImageManager extends EventEmitter {
     const url = URL.createObjectURL(this.imageFile);
 
     img.onload = () => {
-      // 이미지 그리기
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      if (inMark) {
+        // Mark에서 처음에 약간 투명하게 표시함
+        ctx.filter = 'opacity(50%)';
+        // 이미지 그리기
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        // 다시 filter를 초기화해줌
+        ctx.filter = 'none';
+      } else {
+        // 이미지 그리기
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      }
+
       // 메모리 해제
       URL.revokeObjectURL(url);
     };

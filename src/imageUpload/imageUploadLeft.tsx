@@ -66,7 +66,7 @@ export default function ImageUploadLeft({
     } else {
       if (canvasRef.current) {
         // imageManager가 canvas 위에 이미지를 띄워줌
-        imageManager.showImage(canvasRef.current);
+        imageManager.showImage(canvasRef.current, false);
       }
     }
   }, [imageManager]);

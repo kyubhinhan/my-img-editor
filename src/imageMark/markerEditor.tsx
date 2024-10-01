@@ -65,6 +65,9 @@ export default function MarkerEditor({
       if (editedPointer == null) {
         // 포인터를 삭제한 경우
         marker.deletePointer(pointer.id);
+      } else {
+        // 포인터를 수정한 경우
+        marker.editPointer(editedPointer);
       }
       setPointer(editedPointer);
       editPointer();

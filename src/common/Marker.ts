@@ -55,6 +55,18 @@ class Marker extends EventEmitter {
     this.pointers = this.pointers.filter((pointer) => pointer.id != id);
   }
 
+  editPointer(editedPointer: Pointer) {
+    const pointer = this.pointers.find(
+      (pointer) => pointer.id == editedPointer.id
+    );
+    if (pointer) {
+      pointer.x = editedPointer.x;
+      pointer.y = editedPointer.y;
+    } else {
+      ErrUtil.assert(false);
+    }
+  }
+
   findPointer(x: number, y: number) {
     return this.pointers.find((p) => {
       const squaredDistance = (p.x - x) ** 2 + (p.y - y) ** 2;

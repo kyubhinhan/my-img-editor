@@ -3,7 +3,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import Marker from '../common/Marker';
 import { Button } from '@nextui-org/react';
-import ErrUtil from '../common/ErrUtil';
 import FormItem from '../common/form/FormItem';
 import { Pointer } from '../common/form/PointerBox';
 
@@ -11,66 +10,39 @@ export default function MarkerEditor({
   marker,
   saveMarker,
 }: {
-  marker: Marker | null;
+  marker: Marker;
   saveMarker: () => void;
 }) {
-  //// marker style 관련
-  const commonStyle = {
-    backgroundColor: '#525252',
-    borderRadius: '0 0 20px 20px',
-    overflow: 'hidden',
-    whiteSpace: 'noWrap',
-    transition: 'height 0.5s ease, padding 0.5s ease',
-    gap: '20px',
-  };
-  const showMarker = {
-    ...commonStyle,
-    height: '200px',
-    padding: '12px',
-  };
-  const hideMarker = {
-    ...commonStyle,
-    height: '0px',
-    padding: '0px',
-  };
-  //// end of marker style 관련
-
   //// marker value 변경 관련
   const [name, setName] = useState('');
   const [color, setColor] = useState('#000000');
   const [category, setCategory] = useState('ceiling');
   const [pointer, setPointer] = useState<Pointer>(null);
-  const hasChanges = useMemo(() => {
-    if (marker == null) return false;
-    else
-      return (
-        marker.name != name ||
-        marker.color != color ||
-        marker.category != category
-      );
-  }, [name, color, category, marker]);
 
+  const hasChanges = useMemo(() => {
+    return (
+      marker.name != name ||
+      marker.color.toLowerCase() != color.toLowerCase() ||
+      marker.category != category
+    );
+  }, [name, color, category]);
   useEffect(() => {
-    if (marker) {
-      marker.setHasChanges(hasChanges);
-    }
+    marker.setHasChanges(hasChanges);
   }, [hasChanges]);
 
   useEffect(() => {
-    if (marker) {
-      const updateActivePointer = () => {
-        setPointer(marker.getActivePointer() ?? null);
-      };
-      // 초기 설정
-      updateActivePointer();
-      setInitialState(marker);
-      // marker가 존재하면 이벤트 리스너 등록
-      marker.on('activePointerChange', updateActivePointer);
-      // 컴포넌트 언마운트 시 이벤트 리스너 해제
-      return () => {
-        marker.off('activePointerChange', updateActivePointer);
-      };
-    }
+    const updateActivePointer = () => {
+      setPointer(marker.getActivePointer() ?? null);
+    };
+    // 초기 설정
+    updateActivePointer();
+    setInitialState(marker);
+    // marker가 존재하면 이벤트 리스너 등록
+    marker.on('activePointerChange', updateActivePointer);
+    // 컴포넌트 언마운트 시 이벤트 리스너 해제
+    return () => {
+      marker.off('activePointerChange', updateActivePointer);
+    };
   }, [marker]);
 
   const onNameChange = (name: string) => {
@@ -90,22 +62,14 @@ export default function MarkerEditor({
   };
 
   const onRevertButtonClick = () => {
-    if (marker) {
-      setInitialState(marker);
-    } else {
-      ErrUtil.assert(false);
-    }
+    setInitialState(marker);
   };
 
   const onSaveButtonClick = () => {
-    if (marker) {
-      marker.setName(name);
-      marker.setColor(color);
-      marker.setCategory(category);
-      saveMarker();
-    } else {
-      ErrUtil.assert(false);
-    }
+    marker.setName(name);
+    marker.setColor(color);
+    marker.setCategory(category);
+    saveMarker();
   };
 
   const setInitialState = (marker: Marker) => {
@@ -117,7 +81,7 @@ export default function MarkerEditor({
   //// end of marker value 변경 관련
 
   return (
-    <section className="flex flex-col" style={marker ? showMarker : hideMarker}>
+    <section className="flex flex-col gap-6">
       <h3
         style={{
           fontWeight: 600,

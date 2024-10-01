@@ -29,6 +29,26 @@ export default function ImageMarkLeft({
       imageManager.off('activeMarkerChange', updateActiveMarker);
     };
   }, [imageManager]);
+
+  // marker holder 스타일 관련
+  const commonStyle = {
+    backgroundColor: '#525252',
+    borderRadius: '0 0 20px 20px',
+    overflow: 'hidden',
+    whiteSpace: 'noWrap',
+    transition: 'height 0.5s ease, padding 0.5s ease',
+  };
+  const showMarker = {
+    ...commonStyle,
+    height: '200px',
+    padding: '12px',
+  };
+  const hideMarker = {
+    ...commonStyle,
+    height: '0px',
+    padding: '0px',
+  };
+  // end of marker holder 스타일 관련
   //// end of activeMarker 관련
 
   //// 이미지를 canvas 위에 보여주는 것과 관련
@@ -68,7 +88,11 @@ export default function ImageMarkLeft({
   return (
     <section className="h-full flex flex-col items-center">
       <section style={{ height: '250px', width: '800px' }}>
-        <MarkerEditor marker={activeMarker} saveMarker={saveMarker} />
+        <section style={activeMarker ? showMarker : hideMarker}>
+          {activeMarker && (
+            <MarkerEditor marker={activeMarker} saveMarker={saveMarker} />
+          )}
+        </section>
       </section>
       <canvas
         onMouseDown={onMouseDown}

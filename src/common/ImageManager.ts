@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import ErrUtil from './ErrUtil';
-import Marker from './Marker';
+import Marker, { Pointer } from './Marker';
 import Lodash from 'lodash';
 
 const colors = [
@@ -92,8 +92,7 @@ class ImageManager extends EventEmitter {
     this.imageElement = img;
   }
 
-  // 캔버스에 마커들을 그려주는 메소드
-  drawMarker(canvas: HTMLCanvasElement) {
+  drawImage(canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext('2d');
     if (ctx == null) {
       ErrUtil.assert(false);
@@ -104,43 +103,64 @@ class ImageManager extends EventEmitter {
     ctx.filter = 'opacity(50%)';
     ctx.drawImage(this.imageElement, 0, 0, canvas.width, canvas.height);
     ctx.filter = 'none';
+  }
+
+  // 캔버스에 마커들을 그려주는 메소드
+  drawMarker(canvas: HTMLCanvasElement) {
+    const ctx = canvas.getContext('2d');
+    if (ctx == null) {
+      ErrUtil.assert(false);
+      return;
+    }
+
+    this.drawImage(canvas);
     this.markers.forEach((marker) => {
-      // 해당 위치에 점을 먼저 찍어줌
-      marker.pointers.forEach((pointer) => {
-        ctx.beginPath();
-        ctx.arc(pointer.x, pointer.y, 8, 0, Math.PI * 2);
-        ctx.fillStyle = marker.color;
-        ctx.fill();
-      });
-
-      // 해당 점들을 이어줌
-      ctx.beginPath();
-      marker.pointers.forEach((pointer, index) => {
-        if (index == 0) {
-          ctx.moveTo(pointer.x, pointer.y);
-        } else {
-          ctx.lineTo(pointer.x, pointer.y);
-        }
-      });
-      ctx.closePath();
-      ctx.strokeStyle = marker.color;
-      ctx.stroke();
-
-      // 점들을 이은 부분을 채워줌
-      ctx.beginPath();
-      marker.pointers.forEach((pointer, index) => {
-        if (index == 0) {
-          ctx.moveTo(pointer.x, pointer.y);
-        } else {
-          ctx.lineTo(pointer.x, pointer.y);
-        }
-      });
-      ctx.closePath();
-      ctx.globalAlpha = 0.3;
-      ctx.fillStyle = marker.color;
-      ctx.fill();
-      ctx.globalAlpha = 1;
+      this.drawPointers(canvas, marker.pointers, marker.color);
     });
+  }
+
+  drawPointers(canvas: HTMLCanvasElement, pointers: Pointer[], color: string) {
+    const ctx = canvas.getContext('2d');
+    if (ctx == null) {
+      ErrUtil.assert(false);
+      return;
+    }
+
+    // 해당 위치에 점을 먼저 찍어줌
+    pointers.forEach((pointer) => {
+      ctx.beginPath();
+      ctx.arc(pointer.x, pointer.y, 8, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+    });
+
+    // 해당 점들을 이어줌
+    ctx.beginPath();
+    pointers.forEach((pointer, index) => {
+      if (index == 0) {
+        ctx.moveTo(pointer.x, pointer.y);
+      } else {
+        ctx.lineTo(pointer.x, pointer.y);
+      }
+    });
+    ctx.closePath();
+    ctx.strokeStyle = color;
+    ctx.stroke();
+
+    // 점들을 이은 부분을 채워줌
+    ctx.beginPath();
+    pointers.forEach((pointer, index) => {
+      if (index == 0) {
+        ctx.moveTo(pointer.x, pointer.y);
+      } else {
+        ctx.lineTo(pointer.x, pointer.y);
+      }
+    });
+    ctx.closePath();
+    ctx.globalAlpha = 0.3;
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.globalAlpha = 1;
   }
 
   getActiveMarker() {

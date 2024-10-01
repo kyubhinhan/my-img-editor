@@ -23,36 +23,31 @@ class Marker extends EventEmitter {
     this.name = name;
     this.color = color;
     this.category = category;
-    this.hasChanges = false;
     this.pointers = [];
     this.activePointer = null;
+    this.hasChanges = false;
   }
 
-  setName(newName: string) {
+  saveEditData(
+    newName: string,
+    newColor: string,
+    newCategory: string,
+    newPointers: Pointer[]
+  ) {
     this.name = newName;
-  }
-
-  setColor(newColor: string) {
     this.color = newColor;
-  }
-
-  setCategory(newCategory: string) {
     this.category = newCategory;
+    this.pointers = newPointers;
+    this.hasChanges = false;
   }
 
   setHasChanges(hasChanges: boolean) {
     this.hasChanges = hasChanges;
   }
 
-  addPointer(x: number, y: number) {
+  createPointer(x: number, y: number) {
     const newPointer = { id: Lodash.uniqueId(), x, y };
-    this.pointers.push(newPointer);
     return newPointer;
-  }
-
-  deletePointer(id: string) {
-    ErrUtil.assert(this.pointers.some((pointer) => pointer.id == id));
-    this.pointers = this.pointers.filter((pointer) => pointer.id != id);
   }
 
   editPointer(editedPointer: Pointer) {

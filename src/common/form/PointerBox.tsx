@@ -4,31 +4,26 @@ import ErrUtil from '../ErrUtil';
 import NumberBox from './NumberBox';
 import { Button } from '@nextui-org/react';
 import { RiDeleteBin6Line } from 'react-icons/ri';
-
-type Pointer = {
-  x: number;
-  y: number;
-} | null;
+import { Pointer } from '../Marker';
 
 type EditorProps = {
   xMax: number;
   yMax: number;
 };
 
-export type { Pointer };
-
 export default function PointerBox({
   value,
   onValueChange,
   editorProps,
 }: {
-  value: Pointer;
-  onValueChange: (value: Pointer) => void;
+  value: Pointer | null;
+  onValueChange: (value: Pointer | null) => void;
   editorProps: EditorProps;
 }) {
   const onXValueChange = (xPosition: number) => {
     if (value) {
       onValueChange({
+        id: value.id,
         x: xPosition,
         y: value.y,
       });
@@ -40,6 +35,7 @@ export default function PointerBox({
   const onYValueChange = (yPosition: number) => {
     if (value) {
       onValueChange({
+        id: value.id,
         x: value.x,
         y: yPosition,
       });

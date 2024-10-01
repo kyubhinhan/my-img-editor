@@ -60,7 +60,7 @@ export default function ImageMarkLeft({
   }, [imageManager]);
   //// end of 이미지를 canvas 위에 보여주는 것과 관련
 
-  //// canvas 위에 포인터를 추가하는 것 관련
+  //// canvas 위에 마킹하는 것 관련
   const onMouseDown = (event: React.MouseEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current || !activeMarker) {
       ErrUtil.assert(false);
@@ -83,6 +83,14 @@ export default function ImageMarkLeft({
       }
     }
   };
+
+  const editPointer = () => {
+    if (!canvasRef.current || !activeMarker) {
+      ErrUtil.assert(false);
+    } else {
+      imageManager.drawMarker(canvasRef.current);
+    }
+  };
   //// end of canvas 위에 마킹하는 것 관련
 
   return (
@@ -90,7 +98,11 @@ export default function ImageMarkLeft({
       <section style={{ height: '250px', width: '800px' }}>
         <section style={activeMarker ? showMarker : hideMarker}>
           {activeMarker && (
-            <MarkerEditor marker={activeMarker} saveMarker={saveMarker} />
+            <MarkerEditor
+              marker={activeMarker}
+              saveMarker={saveMarker}
+              editPointer={editPointer}
+            />
           )}
         </section>
       </section>

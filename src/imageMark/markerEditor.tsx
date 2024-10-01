@@ -4,20 +4,23 @@ import { useState, useEffect, useMemo } from 'react';
 import Marker from '../common/Marker';
 import { Button } from '@nextui-org/react';
 import FormItem from '../common/form/FormItem';
-import { Pointer } from '../common/form/PointerBox';
+import ErrUtil from '../common/ErrUtil';
+import { Pointer } from '../common/Marker';
 
 export default function MarkerEditor({
   marker,
   saveMarker,
+  editPointer,
 }: {
   marker: Marker;
   saveMarker: () => void;
+  editPointer: () => void;
 }) {
   //// marker value 변경 관련
   const [name, setName] = useState('');
   const [color, setColor] = useState('#000000');
   const [category, setCategory] = useState('ceiling');
-  const [pointer, setPointer] = useState<Pointer>(null);
+  const [pointer, setPointer] = useState<Pointer | null>(null);
 
   const hasChanges = useMemo(() => {
     return (
@@ -57,8 +60,18 @@ export default function MarkerEditor({
     setCategory(category);
   };
 
-  const onPointerChange = (pointer: Pointer) => {
-    setPointer(pointer);
+  const onPointerChange = (editedPointer: Pointer | null) => {
+    if (pointer) {
+      if (editedPointer == null) {
+        // 포인터를 삭제한 경우
+        marker.deletePointer(pointer.id);
+      }
+      setPointer(editedPointer);
+      editPointer();
+    } else {
+      // 포인터가 있어야 함
+      ErrUtil.assert(false);
+    }
   };
 
   const onRevertButtonClick = () => {

@@ -218,19 +218,24 @@ class ImageManager extends EventEmitter {
 
   // marker 수정 이벤트를 올림
   emitChangeMarker() {
-    // 마커 업데이트
-    this.markers = [...this.markers];
-    this.emit('markersChange', this.markers);
-
-    // activeMarker 업데이트 (화면이 갱신되도록 일단 새걸로 넣었는데, 이거 갱신을 이런 식으로 하면 안 될 것 같음..)
-    if (this.activeMarker) {
+    if (this.activeMarker != null) {
+      // activeMarker가 존재해야 함
+      // reat의 reactive system을 사용하기 위해서 새롭게 할당해줌(더 좋은 방법을 찾으면 변경할 것)
       this.activeMarker = new Marker(
         this.activeMarker.id,
         this.activeMarker.name,
         this.activeMarker.color,
-        this.activeMarker.category
+        this.activeMarker.category,
+        this.activeMarker.pointers
       );
       this.emit('activeMarkerChange', this.activeMarker);
+
+      // 전체 마커들 업데이트
+      this.markers = this.markers.map((marker) => {
+        if (marker.id != this.activeMarker?.id) return marker;
+        else return this.activeMarker;
+      });
+      this.emit('markersChange', this.markers);
     } else {
       ErrUtil.assert(false);
     }

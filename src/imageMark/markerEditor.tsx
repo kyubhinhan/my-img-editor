@@ -55,7 +55,7 @@ export default function MarkerEditor({
       marker.category != category ||
       isPointerChanged
     );
-  }, [name, color, category, pointers]);
+  }, [name, color, category, pointers, marker]);
   useEffect(() => {
     marker.setHasChanges(hasChanges);
   }, [hasChanges]);

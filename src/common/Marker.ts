@@ -17,13 +17,19 @@ class Marker extends EventEmitter {
   public pointers: Pointer[];
   public activePointer: Pointer | null;
 
-  constructor(id: string, name: string, color: string, category: string) {
+  constructor(
+    id: string,
+    name: string,
+    color: string,
+    category: string,
+    pointers?: Pointer[]
+  ) {
     super();
     this.id = id;
     this.name = name;
     this.color = color;
     this.category = category;
-    this.pointers = [];
+    this.pointers = pointers ?? [];
     this.activePointer = null;
     this.hasChanges = false;
   }

@@ -85,15 +85,13 @@ export default function MarkerEditor({
         );
       } else {
         // 포인터를 수정한 경우
-        const pointer = pointers.find((p) => p.id == editedPointer.id);
-        if (pointer) {
-          pointer.x = editedPointer.x;
-          pointer.y = editedPointer.y;
-        } else {
-          ErrUtil.assert(false);
-        }
+        setPointers(
+          pointers.map((pointer) => {
+            if (pointer.id != editedPointer.id) return pointer;
+            else return editedPointer;
+          })
+        );
         setActivePointer(editedPointer);
-        setPointers(pointers);
       }
     } else {
       // 포인터가 있어야 함

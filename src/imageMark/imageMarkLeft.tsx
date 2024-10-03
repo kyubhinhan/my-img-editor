@@ -57,10 +57,11 @@ export default function ImageMarkLeft({
   const drawPointers = (
     canvas: HTMLCanvasElement,
     pointers: Pointer[],
-    color: string
+    color: string,
+    activePointer: Pointer | null
   ) => {
     imageManager.drawImage(canvas);
-    imageManager.drawPointers(canvas, pointers, color);
+    imageManager.drawPointers(canvas, pointers, activePointer, color);
   };
 
   return (

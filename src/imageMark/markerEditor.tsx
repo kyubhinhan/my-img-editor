@@ -19,7 +19,8 @@ export default function MarkerEditor({
   drawPointers: (
     canvas: HTMLCanvasElement,
     pointers: Pointer[],
-    color: string
+    color: string,
+    activePointer: Pointer | null
   ) => void;
 }) {
   //// marker value 변경 관련
@@ -36,8 +37,8 @@ export default function MarkerEditor({
 
   // 포인터들의 변화에 따라서 canvas에 관련 값을 그려줌
   useEffect(() => {
-    drawPointers(canvas, pointers, color);
-  }, [pointers, color]);
+    drawPointers(canvas, pointers, color, activePointer);
+  }, [pointers, color, activePointer]);
 
   // 마커의 변화를 감지해줌
   const hasChanges = useMemo(() => {

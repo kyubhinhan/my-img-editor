@@ -115,15 +115,28 @@ class ImageManager extends EventEmitter {
 
     this.drawImage(canvas);
     this.markers.forEach((marker) => {
-      this.drawPointers(canvas, marker.pointers, marker.color);
+      this.drawPointers(canvas, marker.pointers, null, marker.color);
     });
   }
 
-  drawPointers(canvas: HTMLCanvasElement, pointers: Pointer[], color: string) {
+  drawPointers(
+    canvas: HTMLCanvasElement,
+    pointers: Pointer[],
+    activePointer: Pointer | null,
+    color: string
+  ) {
     const ctx = canvas.getContext('2d');
     if (ctx == null) {
       ErrUtil.assert(false);
       return;
+    }
+
+    // activePointer가 있을 경우, 이를 강조해줌(일단 외부에 원을 추가하는 식으로 강조)
+    if (activePointer) {
+      ctx.beginPath();
+      ctx.arc(activePointer.x, activePointer.y, 12, 0, Math.PI * 2);
+      ctx.strokeStyle = color;
+      ctx.stroke();
     }
 
     // 해당 위치에 점을 먼저 찍어줌

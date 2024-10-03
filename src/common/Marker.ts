@@ -15,7 +15,6 @@ class Marker extends EventEmitter {
   public category: string;
   public hasChanges: boolean;
   public pointers: Pointer[];
-  public activePointer: Pointer | null;
 
   constructor(
     id: string,
@@ -30,7 +29,6 @@ class Marker extends EventEmitter {
     this.color = color;
     this.category = category;
     this.pointers = pointers ?? [];
-    this.activePointer = null;
     this.hasChanges = false;
   }
 
@@ -73,23 +71,6 @@ class Marker extends EventEmitter {
       const squaredDistance = (p.x - x) ** 2 + (p.y - y) ** 2;
       return squaredDistance <= 8 ** 2;
     });
-  }
-
-  setActivePointer(activePointer: Pointer | null) {
-    if (activePointer == null) {
-      this.activePointer = null;
-    } else {
-      ErrUtil.assert(
-        this.pointers.some((pointer) => pointer.id == activePointer.id)
-      );
-      this.activePointer = activePointer;
-    }
-
-    this.emit('activePointerChange', this.activePointer);
-  }
-
-  getActivePointer() {
-    return this.activePointer;
   }
 }
 

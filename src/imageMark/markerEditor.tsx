@@ -75,10 +75,13 @@ export default function MarkerEditor({
   const onPointerChange = (editedPointer: Pointer | null) => {
     if (activePointer) {
       if (editedPointer == null) {
-        // 포인터를 삭제한 경우
-        setActivePointer(editedPointer);
-        setPointers(
-          pointers.filter((pointer) => pointer.id != activePointer.id)
+        // 포인터를 삭제한 경우, 바로 이전에 추가된 포인터를 activePointer로 설정해줌
+        const newPointers = pointers.filter(
+          (pointer) => pointer.id != activePointer.id
+        );
+        setPointers(newPointers);
+        setActivePointer(
+          newPointers.length > 0 ? newPointers[newPointers.length - 1] : null
         );
       } else {
         // 포인터를 수정한 경우

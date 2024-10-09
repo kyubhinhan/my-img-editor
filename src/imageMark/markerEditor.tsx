@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
 import Marker from '../common/Marker';
 import { Button } from '@nextui-org/react';
 import FormItem from '../common/form/FormItem';
@@ -12,6 +12,7 @@ export default function MarkerEditor({
   marker,
   saveMarker,
   drawPointers,
+  setCursor,
 }: {
   canvas: HTMLCanvasElement;
   marker: Marker;
@@ -22,6 +23,7 @@ export default function MarkerEditor({
     color: string,
     activePointer: Pointer | null
   ) => void;
+  setCursor: Dispatch<SetStateAction<'default' | 'grab' | 'grabbing'>>;
 }) {
   //// marker value 변경 관련
   const [name, setName] = useState('');
@@ -86,13 +88,7 @@ export default function MarkerEditor({
         );
       } else {
         // 포인터를 수정한 경우
-        setPointers(
-          pointers.map((pointer) => {
-            if (pointer.id != editedPointer.id) return pointer;
-            else return editedPointer;
-          })
-        );
-        setActivePointer(editedPointer);
+        editPointer(editedPointer, pointers, setPointers, setActivePointer);
       }
     } else {
       // 포인터가 있어야 함
@@ -121,16 +117,12 @@ export default function MarkerEditor({
   //// canvas에 포인터 관련 이벤트 설정
   useEffect(() => {
     const onMouseDown = (event: MouseEvent) => {
-      // target 요소 내에서의 상대적인 마우스 좌표 계산
-      const rect = canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
+      // mouse cursor 모양을 변경해줌
+      setCursorWithMouseEvent(canvas, event, pointers, setCursor);
 
-      // 해당 위치에 기존의 포인터가 있는지 파악
-      const pointer = pointers.find((p) => {
-        const squaredDistance = (p.x - x) ** 2 + (p.y - y) ** 2;
-        return squaredDistance <= 8 ** 2;
-      });
+      // activePointer 관련 처리를 해줌
+      const { x, y } = findPosition(canvas, event);
+      const pointer = findPointer(x, y, pointers);
       if (pointer != null) {
         setActivePointer(pointer);
       } else {
@@ -140,12 +132,35 @@ export default function MarkerEditor({
         setActivePointer(newPointer);
       }
     };
+    const onMouseUp = (event: MouseEvent) => {
+      setCursorWithMouseEvent(canvas, event, pointers, setCursor);
+    };
+    const onMouseMove = (event: MouseEvent) => {
+      setCursorWithMouseEvent(canvas, event, pointers, setCursor);
+
+      // 포인터를 그랩하고 움직일 경우에 대한 처리를 해줌
+      const { x, y } = findPosition(canvas, event);
+      const pointer = findPointer(x, y, pointers);
+      if (pointer == null || event.buttons !== 1) {
+        // do nothing
+      } else {
+        // 포인터를 그랩하며 움직이는 경우
+        // 해당 위치에 새로운 포인터를 만들어 준 후, 기존 포인터를 수정해줌
+        const newPointer = { ...pointer, x, y };
+        editPointer(newPointer, pointers, setPointers, setActivePointer);
+      }
+    };
+
     // 이벤트 리스너를 캔버스에 추가
     canvas.addEventListener('mousedown', onMouseDown as EventListener);
+    canvas.addEventListener('mouseup', onMouseUp as EventListener);
+    canvas.addEventListener('mousemove', onMouseMove as EventListener);
 
     // 컴포넌트가 언마운트되면 이벤트 리스너 제거
     return () => {
       canvas.removeEventListener('mousedown', onMouseDown as EventListener);
+      canvas.removeEventListener('mouseup', onMouseUp as EventListener);
+      canvas.removeEventListener('mousemove', onMouseMove as EventListener);
     };
   }, [pointers]);
   //// end of canvas에 포인터 관련 이벤트 설정
@@ -225,4 +240,69 @@ export default function MarkerEditor({
       </div>
     </section>
   );
+}
+
+function findPosition(canvas: HTMLCanvasElement, mouseEvent: MouseEvent) {
+  const rect = canvas.getBoundingClientRect();
+  return {
+    x: mouseEvent.clientX - rect.left,
+    y: mouseEvent.clientY - rect.top,
+  };
+}
+
+function findPointer(x: number, y: number, pointers: Pointer[]) {
+  return pointers.find((p) => {
+    const squaredDistance = (p.x - x) ** 2 + (p.y - y) ** 2;
+    return squaredDistance <= 8 ** 2;
+  });
+}
+
+function setCursorWithMouseEvent(
+  canvas: HTMLCanvasElement,
+  mouseEvent: MouseEvent,
+  pointers: Pointer[],
+  setCursor: Dispatch<SetStateAction<'default' | 'grab' | 'grabbing'>>
+) {
+  const { x, y } = findPosition(canvas, mouseEvent);
+  const pointer = findPointer(x, y, pointers);
+
+  if (mouseEvent.type === 'mouseup') {
+    if (pointer == null) {
+      setCursor('default');
+    } else {
+      setCursor('grab');
+    }
+  } else if (mouseEvent.type === 'mousemove') {
+    if (pointer == null) {
+      setCursor('default');
+    } else if (mouseEvent.buttons === 1) {
+      // 끌면서 움직일 때,
+      setCursor('grabbing');
+    } else {
+      setCursor('grab');
+    }
+  } else if (mouseEvent.type === 'mousedown') {
+    if (pointer == null) {
+      // do nothing
+    } else {
+      setCursor('grabbing');
+    }
+  } else {
+    ErrUtil.assert(false);
+  }
+}
+
+function editPointer(
+  newPointer: Pointer,
+  pointers: Pointer[],
+  setPointers: Dispatch<SetStateAction<Pointer[]>>,
+  setActivePointer: Dispatch<SetStateAction<Pointer | null>>
+) {
+  setPointers(
+    pointers.map((pointer) => {
+      if (pointer.id != newPointer.id) return pointer;
+      else return newPointer;
+    })
+  );
+  setActivePointer(newPointer);
 }

@@ -31,6 +31,12 @@ export default function ImageMarkLeft({
   };
   //// end of 스타일 관련
 
+  //// 마우스 커서 관련
+  const [cursor, setCursor] = useState<'default' | 'grab' | 'grabbing'>(
+    'default'
+  );
+  //// end of 마우스 커서 관련
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [activeMarker, setActiveMarker] = useState<Marker | null>(null);
   useEffect(() => {
@@ -74,11 +80,17 @@ export default function ImageMarkLeft({
               marker={activeMarker}
               saveMarker={saveMarker}
               drawPointers={drawPointers}
+              setCursor={setCursor}
             />
           )}
         </section>
       </section>
-      <canvas ref={canvasRef} width={800} height={500}></canvas>
+      <canvas
+        ref={canvasRef}
+        width={800}
+        height={500}
+        style={{ cursor }}
+      ></canvas>
     </section>
   );
 }

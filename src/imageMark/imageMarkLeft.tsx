@@ -67,7 +67,18 @@ export default function ImageMarkLeft({
     activePointer: Pointer | null
   ) => {
     imageManager.drawImage(canvas);
+    // activeMarker의 pointer들을 그려줌
     imageManager.drawPointers(canvas, pointers, activePointer, color);
+
+    // activeMarker를 제외한 다른 마커들의 pointer들을 그려줌
+    // 이때 다른 마커들의 포인터의 색은 회색으로 통일
+    imageManager.getMarkers().forEach((marker) => {
+      if (marker.id == activeMarker?.id) {
+        // do nothing
+      } else {
+        imageManager.drawPointers(canvas, marker.pointers, null, 'grey');
+      }
+    });
   };
 
   return (

@@ -4,16 +4,16 @@ import Marker, { Pointer } from './Marker';
 import Lodash from 'lodash';
 
 const colors = [
-  '#A1D6B2',
-  '#CEDF9F',
-  '#F1F3C2',
-  '#E8B86D',
-  '#C96868',
-  '#FADFA1',
-  '#FFF4EA',
-  '#7EACB5',
-  '#7695FF',
-  '#9DBDFF',
+  '#FF0000',
+  '#0000FF',
+  '#00FF00',
+  '#FFFF00',
+  '#FFA500',
+  '#800080',
+  '#00FFFF',
+  '#FF00FF',
+  '#BFFF00',
+  '#A52A2A',
 ];
 
 class ImageManager extends EventEmitter {

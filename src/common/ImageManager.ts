@@ -140,7 +140,8 @@ class ImageManager extends EventEmitter {
     }
 
     // 해당 위치에 점을 먼저 찍어줌
-    pointers.forEach((pointer) => {
+    const poitnersForMark = getPointersForMark(pointers);
+    poitnersForMark.forEach((pointer) => {
       ctx.beginPath();
       ctx.arc(pointer.x, pointer.y, 8, 0, Math.PI * 2);
       ctx.fillStyle = color;
@@ -149,7 +150,7 @@ class ImageManager extends EventEmitter {
 
     // 해당 점들을 이어줌
     ctx.beginPath();
-    pointers.forEach((pointer, index) => {
+    poitnersForMark.forEach((pointer, index) => {
       if (index == 0) {
         ctx.moveTo(pointer.x, pointer.y);
       } else {
@@ -162,7 +163,7 @@ class ImageManager extends EventEmitter {
 
     // 점들을 이은 부분을 채워줌
     ctx.beginPath();
-    pointers.forEach((pointer, index) => {
+    poitnersForMark.forEach((pointer, index) => {
       if (index == 0) {
         ctx.moveTo(pointer.x, pointer.y);
       } else {
@@ -273,4 +274,19 @@ function getFileSize(imageFile: File) {
 function getFileLMD(imageFile: File) {
   const lastModifiedDate = new Date(imageFile.lastModified);
   return lastModifiedDate.toLocaleString('ko-KR', { timeZone: 'UTC' });
+}
+
+function getPointersForMark(pointers: Pointer[]) {
+  const pointersForMark = [...pointers];
+  // y 좌표를 기준으로 왼쪽 아래에 있는 것이 가장 먼저 오도록 정렬
+  pointersForMark.sort((a, b) => (a.y == b.y ? a.x - b.x : b.y - a.y));
+  // 첫번째 점을 시작점으로 설정
+  const startPointer = pointersForMark[0];
+  // 시작점을 기준으로 반시계방향으로 정렬
+  pointersForMark.sort((a, b) => {
+    const angleA = Math.atan2(a.y - startPointer.y, a.x - startPointer.x);
+    const angleB = Math.atan2(b.y - startPointer.y, b.x - startPointer.x);
+    return angleA - angleB;
+  });
+  return pointersForMark;
 }

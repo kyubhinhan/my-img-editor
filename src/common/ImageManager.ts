@@ -140,21 +140,21 @@ class ImageManager extends EventEmitter {
     }
 
     // 해당 위치에 점을 먼저 찍어줌
-    const poitnersForMark = getPointersForMark(pointers);
-    poitnersForMark.forEach((pointer) => {
+    const verticesForMark = getVerticesForMark(pointers);
+    verticesForMark.forEach((vertex) => {
       ctx.beginPath();
-      ctx.arc(pointer.x, pointer.y, 8, 0, Math.PI * 2);
+      ctx.arc(vertex.x, vertex.y, 8, 0, Math.PI * 2);
       ctx.fillStyle = color;
       ctx.fill();
     });
 
     // 해당 점들을 이어줌
     ctx.beginPath();
-    poitnersForMark.forEach((pointer, index) => {
+    verticesForMark.forEach((vertex, index) => {
       if (index == 0) {
-        ctx.moveTo(pointer.x, pointer.y);
+        ctx.moveTo(vertex.x, vertex.y);
       } else {
-        ctx.lineTo(pointer.x, pointer.y);
+        ctx.lineTo(vertex.x, vertex.y);
       }
     });
     ctx.closePath();
@@ -163,11 +163,11 @@ class ImageManager extends EventEmitter {
 
     // 점들을 이은 부분을 채워줌
     ctx.beginPath();
-    poitnersForMark.forEach((pointer, index) => {
+    verticesForMark.forEach((vertex, index) => {
       if (index == 0) {
-        ctx.moveTo(pointer.x, pointer.y);
+        ctx.moveTo(vertex.x, vertex.y);
       } else {
-        ctx.lineTo(pointer.x, pointer.y);
+        ctx.lineTo(vertex.x, vertex.y);
       }
     });
     ctx.closePath();
@@ -276,17 +276,51 @@ function getFileLMD(imageFile: File) {
   return lastModifiedDate.toLocaleString('ko-KR', { timeZone: 'UTC' });
 }
 
-function getPointersForMark(pointers: Pointer[]) {
-  const pointersForMark = [...pointers];
+function getVerticesForMark(pointers: Pointer[]) {
+  const vertices = [...pointers];
   // y 좌표를 기준으로 왼쪽 아래에 있는 것이 가장 먼저 오도록 정렬
-  pointersForMark.sort((a, b) => (a.y == b.y ? a.x - b.x : b.y - a.y));
+  vertices.sort((a, b) => (a.y == b.y ? a.x - b.x : b.y - a.y));
   // 첫번째 점을 시작점으로 설정
-  const startPointer = pointersForMark[0];
+  const startPointer = vertices[0];
   // 시작점을 기준으로 반시계방향으로 정렬
-  pointersForMark.sort((a, b) => {
+  vertices.sort((a, b) => {
     const angleA = Math.atan2(a.y - startPointer.y, a.x - startPointer.x);
     const angleB = Math.atan2(b.y - startPointer.y, b.x - startPointer.x);
     return angleA - angleB;
   });
-  return pointersForMark;
+  return vertices;
+}
+
+function isPositionInPolyGon(
+  position: { x: number; y: number },
+  pointers: Pointer[]
+) {
+  // 점이 3개보다 작으면 다각형을 만들지 못하기 때문에 false를 return함
+  if (pointers.length < 3) return false;
+
+  const vertices = getVerticesForMark(pointers);
+  let x = position.x,
+    y = position.y;
+  let inside = false;
+
+  for (let i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
+    // 첫번째 점의 경우, 마지막 점과
+    // 그 다음 점의 경우, 바로 이전의 점을 기준으로 봄
+    // 모든 변에 대해서 교차하는지 판단해줌
+    let xi = vertices[i].x,
+      yi = vertices[i].y;
+    let xj = vertices[j].x,
+      yj = vertices[j].y;
+
+    // position에서 오른쪽으로 직선을 그었을 때, 두 점으로 만든 변과 만나는 조건은 아래와 같다.
+    // position의 y 좌표가 두 점의 사이에 있어야 하고
+    // position의 x 좌표가 두 점으로 만든 변과 직선이 만나는 점보다 왼쪽에 있어야 함
+    let intersect =
+      yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+
+    // 홀수변 교차하면 내부에 있는 것이고, 짝수번이면 외부에 있는 것이다.
+    if (intersect) inside = !inside;
+  }
+
+  return inside;
 }

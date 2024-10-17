@@ -6,6 +6,8 @@ import { Button } from '@nextui-org/react';
 import FormItem from '../common/form/FormItem';
 import ErrUtil from '../common/ErrUtil';
 import { Pointer } from '../common/Marker';
+import { isPositionInPolyGon } from '../common/ImageManager';
+import { debounce } from 'lodash';
 
 export default function MarkerEditor({
   canvas,
@@ -31,6 +33,10 @@ export default function MarkerEditor({
   const [category, setCategory] = useState('ceiling');
   const [pointers, setPointers] = useState<Pointer[]>([]);
   const [activePointer, setActivePointer] = useState<Pointer | null>(null);
+  const [startPosition, setStartPosition] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
 
   // 초기값 설정
   useEffect(() => {
@@ -120,21 +126,33 @@ export default function MarkerEditor({
       // mouse cursor 모양을 변경해줌
       setCursorWithMouseEvent(canvas, event, pointers, setCursor);
 
-      // activePointer 관련 처리를 해줌
       const { x, y } = findPosition(canvas, event);
+
+      // activePointer 관련 처리를 해줌
       const pointer = findPointer(x, y, pointers);
       if (pointer != null) {
         setActivePointer(pointer);
       } else {
-        // 기존 포인터가 없었을 경우, 새로운 포인터를 만들고, 이 포인터를 activePointer로 설정
-        const newPointer = marker.createPointer(x, y);
-        setPointers([...pointers, newPointer]);
-        setActivePointer(newPointer);
+        // 기존 포인터가 없었을 경우,
+
+        // 다각형의 내부에 있는지 판단해줌
+        const isInPolyGon = isPositionInPolyGon({ x, y }, pointers);
+        if (isInPolyGon) {
+          // 다각형의 내부에 있을 때,
+          setStartPosition({ x, y });
+        } else {
+          // 다각형의 외부에 있을 때, 새로운 포인터를 만들고, 이 포인터를 activePointer로 설정
+          const newPointer = marker.createPointer(x, y);
+          setPointers([...pointers, newPointer]);
+          setActivePointer(newPointer);
+        }
       }
     };
+
     const onMouseUp = (event: MouseEvent) => {
       setCursorWithMouseEvent(canvas, event, pointers, setCursor);
     };
+
     const onMouseMove = (event: MouseEvent) => {
       setCursorWithMouseEvent(canvas, event, pointers, setCursor);
 
@@ -149,20 +167,80 @@ export default function MarkerEditor({
         const newPointer = { ...pointer, x, y };
         editPointer(newPointer, pointers, setPointers, setActivePointer);
       }
+
+      // 내부 영역을 그랩하고 움직일 경우에 대한 처리를 해줌
+      const isInPolyGon = isPositionInPolyGon({ x, y }, pointers);
+      // 내부에 있고, pointer가 아니며, 왼쪽 버튼을 누르고 이동 중일 때,
+      if (isInPolyGon && pointer == null && event.buttons === 1) {
+        const distanceX = x - startPosition.x;
+        const distanceY = y - startPosition.y;
+
+        // 이동하였을 때, 모든 포인터들이 canvas 내부에 있는지 판단해줌
+        const isInCanvas = (() => {
+          // canvas의 width와 height를 구해줌
+          const { width, height } = canvas.getBoundingClientRect();
+
+          // 최소 x,y 최대 x,y 값을 구해줌
+          let minX = pointers[0].x,
+            maxX = pointers[0].x,
+            minY = pointers[0].y,
+            maxY = pointers[0].y;
+          pointers.forEach((pointer) => {
+            if (minX > pointer.x) {
+              minX = pointer.x;
+            }
+            if (maxX < pointer.x) {
+              maxX = pointer.x;
+            }
+            if (minY > pointer.y) {
+              minY = pointer.y;
+            }
+            if (maxY < pointer.y) {
+              maxY = pointer.y;
+            }
+          });
+
+          return (
+            minX + distanceX >= 0 &&
+            maxX + distanceX <= width &&
+            minY + distanceY >= 0 &&
+            maxY + distanceY <= height
+          );
+        })();
+
+        if (isInCanvas) {
+          const newPointers = pointers.map((pointer) => ({
+            id: pointer.id,
+            x: pointer.x + distanceX,
+            y: pointer.y + distanceY,
+          }));
+          setPointers(newPointers);
+          setActivePointer(
+            newPointers.find((pointer) => pointer.id == activePointer?.id) ??
+              null
+          );
+        } else {
+          // do nothing
+        }
+
+        setStartPosition({ x, y });
+      }
     };
+
+    const debouncedMouseMove = debounce(onMouseMove, 5);
 
     // 이벤트 리스너를 캔버스에 추가
     canvas.addEventListener('mousedown', onMouseDown as EventListener);
     canvas.addEventListener('mouseup', onMouseUp as EventListener);
-    canvas.addEventListener('mousemove', onMouseMove as EventListener);
+    canvas.addEventListener('mousemove', debouncedMouseMove);
 
     // 컴포넌트가 언마운트되면 이벤트 리스너 제거
     return () => {
       canvas.removeEventListener('mousedown', onMouseDown as EventListener);
       canvas.removeEventListener('mouseup', onMouseUp as EventListener);
-      canvas.removeEventListener('mousemove', onMouseMove as EventListener);
+      canvas.removeEventListener('mousemove', debouncedMouseMove);
     };
-  }, [pointers]);
+  }, [pointers, startPosition]);
   //// end of canvas에 포인터 관련 이벤트 설정
 
   return (
@@ -265,15 +343,17 @@ function setCursorWithMouseEvent(
 ) {
   const { x, y } = findPosition(canvas, mouseEvent);
   const pointer = findPointer(x, y, pointers);
+  const isInPolyGon = isPositionInPolyGon({ x, y }, pointers);
+  const needResetCursor = pointer == null && !isInPolyGon;
 
   if (mouseEvent.type === 'mouseup') {
-    if (pointer == null) {
+    if (needResetCursor) {
       setCursor('default');
     } else {
       setCursor('grab');
     }
   } else if (mouseEvent.type === 'mousemove') {
-    if (pointer == null) {
+    if (needResetCursor) {
       setCursor('default');
     } else if (mouseEvent.buttons === 1) {
       // 끌면서 움직일 때,
@@ -282,7 +362,7 @@ function setCursorWithMouseEvent(
       setCursor('grab');
     }
   } else if (mouseEvent.type === 'mousedown') {
-    if (pointer == null) {
+    if (needResetCursor) {
       // do nothing
     } else {
       setCursor('grabbing');

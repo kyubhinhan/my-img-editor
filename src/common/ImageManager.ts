@@ -324,3 +324,5 @@ function isPositionInPolyGon(
 
   return inside;
 }
+
+export { isPositionInPolyGon };

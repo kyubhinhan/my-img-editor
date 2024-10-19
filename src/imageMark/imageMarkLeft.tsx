@@ -1,15 +1,24 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { Marker } from '../common/MarkerUtil';
+
+import { useState, useEffect, useRef, Dispatch, SetStateAction } from 'react';
 import ImageManager from '../common/ImageManager';
-import Marker from '../common/Marker';
 import MarkerEditor from './markerEditor';
 import { Pointer } from '../common/Marker';
 
 export default function ImageMarkLeft({
-  imageManager,
+  imageFile,
+  markers,
+  setMarkers,
+  activeMarker,
+  setActiveMarker,
 }: {
-  imageManager: ImageManager;
+  imageFile: File;
+  markers: Marker[];
+  setMarkers: Dispatch<SetStateAction<Marker[]>>;
+  activeMarker: Marker | null;
+  setActiveMarker: Dispatch<SetStateAction<Marker | null>>;
 }) {
   //// 스타일 관련
   const commonStyle = {

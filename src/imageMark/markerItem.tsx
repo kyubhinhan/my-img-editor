@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import Marker from '../common/Marker';
+import { Marker } from '../common/MarkerUtil';
+
 import { Button } from '@nextui-org/button';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 

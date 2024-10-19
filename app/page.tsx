@@ -1,8 +1,13 @@
 'use client';
 
+// type import
+import { Marker } from '@/src/common/MarkerUtil';
+
+// util import
+import MarkerUtil from '@/src/common/MarkerUtil';
+
 import { useState, useEffect, ReactElement } from 'react';
 import HSplitter from '@/app/HSplitter';
-import ImageManager from '@/src/common/ImageManager';
 import ImageUploadLeft from '@/src/imageUpload/imageUploadLeft';
 import ImageUploadRight from '@/src/imageUpload/imageUploadRight';
 import ImageMarkLeft from '@/src/imageMark/imageMarkLeft';
@@ -18,8 +23,14 @@ import { ButtonProps } from '@/src/common/SimplePopup';
 export default function Home() {
   // 전역 데이터 설정
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imageManager, setImageManager] = useState<ImageManager | null>(null);
   const [stage, setStage] = useState('upload');
+
+  const defaultMarkers = MarkerUtil.createDefaultMarkers();
+  const [markers, setMarkers] = useState<Marker[]>(defaultMarkers);
+  const [activeMarker, setActiveMarker] = useState<Marker | null>(
+    defaultMarkers[0]
+  );
+  const [activeMarkerHasChanges, setActiveMarkerHasChanges] = useState(false);
   // end of 전역 데이터 설정
 
   // simplePopup 관련 설정
@@ -56,7 +67,17 @@ export default function Home() {
           <ImageUploadLeft imageFile={imageFile} setImageFile={setImageFile} />
         );
       case 'mark':
-        return imageManager && <ImageMarkLeft imageManager={imageManager} />;
+        return (
+          imageFile && (
+            <ImageMarkLeft
+              imageFile={imageFile}
+              markers={markers}
+              setMarkers={setMarkers}
+              activeMarker={activeMarker}
+              setActiveMarker={setActiveMarker}
+            />
+          )
+        );
       case 'edit':
         return <ImageEditLeft />;
       case 'download':
@@ -78,9 +99,13 @@ export default function Home() {
         );
       case 'mark':
         return (
-          imageManager && (
+          imageFile && (
             <ImageMarkRight
-              imageManager={imageManager}
+              markers={markers}
+              setMarkers={setMarkers}
+              activeMarker={activeMarker}
+              setActiveMarker={setActiveMarker}
+              hasChanges={activeMarkerHasChanges}
               showSimplePopup={showSimplePopup}
               setStage={setStage}
               prevStage="upload"

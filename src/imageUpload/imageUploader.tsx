@@ -1,9 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect, Dispatch, SetStateAction } from 'react';
-import { Button } from '@nextui-org/button';
+import { useState, useRef, Dispatch, SetStateAction } from 'react';
 import { BiImageAdd } from 'react-icons/bi';
-import ImageManager from '../common/ImageManager';
 
 export default function ImageUploader({
   setImageFile,

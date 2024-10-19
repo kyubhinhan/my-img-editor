@@ -37,21 +37,6 @@ class ImageManager extends EventEmitter {
     this.activeMarker = this.markers[0];
   }
 
-  // 이미지 정보를 반환하는 메소드
-  getImageInfo(): {
-    name: string;
-    type: string;
-    size: string;
-    lastModifiedDate: string;
-  } {
-    return {
-      name: this.imageFile.name,
-      type: getFileType(this.imageFile),
-      size: getFileSize(this.imageFile),
-      lastModifiedDate: getFileLMD(this.imageFile),
-    };
-  }
-
   getCategories() {
     return this.categories;
   }
@@ -253,24 +238,6 @@ class ImageManager extends EventEmitter {
 }
 
 export default ImageManager;
-
-function getFileType(imageFile: File) {
-  const type = imageFile.type;
-  return type.split('/')[1];
-}
-
-function getFileSize(imageFile: File) {
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  const bytes = imageFile.size;
-  if (bytes === 0) return '0 Bytes';
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
-}
-
-function getFileLMD(imageFile: File) {
-  const lastModifiedDate = new Date(imageFile.lastModified);
-  return lastModifiedDate.toLocaleString('ko-KR', { timeZone: 'UTC' });
-}
 
 function getVerticesForMark(pointers: Pointer[]) {
   const vertices = [...pointers];

@@ -3,50 +3,49 @@
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import ReadOnlyTextBox from '@/src/common/ReadOnlyTextBox';
 import CommonRightComponent from '@/src/common/CommonRightComponent';
-import ImageManager from '../common/ImageManager';
+import ImageUtil from '../common/ImageUtil';
 
 export default function ImageUploadRight({
-  imageManager,
+  imageFile,
   setStage,
   nextStage,
 }: {
-  imageManager: ImageManager | null;
+  imageFile: File | null;
   setStage: Dispatch<SetStateAction<string>>;
   nextStage: string;
 }) {
-  //// 컴포넌트 순서 조작 버튼 관련
+  //// 진행 버튼 관련
   const [buttonDisabled, setButtonDisabled] = useState(true);
   useEffect(() => {
-    if (imageManager == null) {
+    if (imageFile == null) {
       setButtonDisabled(true);
     } else {
       setButtonDisabled(false);
     }
-  }, [imageManager]);
+  }, [imageFile]);
+  //// end of 진행 버튼 관련
 
-  //// end of 컴포넌트 순서 조작 버튼 관련
-
-  //// ReadOnlyTextBox 관련
+  //// ImageFile 정보 관련
   const [fileName, setFileName] = useState('-');
   const [fileType, setFileType] = useState('-');
   const [fileSize, setFileSize] = useState('-');
   const [fileLMD, setFileLMD] = useState('-');
   useEffect(() => {
-    if (imageManager == null) {
+    if (imageFile == null) {
       setFileName('-');
       setFileType('-');
       setFileSize('-');
       setFileLMD('-');
     } else {
       const { name, type, size, lastModifiedDate } =
-        imageManager.getImageInfo();
+        ImageUtil.createImageInfo(imageFile);
       setFileName(name);
       setFileType(type);
       setFileSize(size);
       setFileLMD(lastModifiedDate);
     }
-  }, [imageManager]);
-  //// end of ReadOnlyTextBox 관련
+  }, [imageFile]);
+  //// ImageFile 정보 관련
 
   return (
     <CommonRightComponent

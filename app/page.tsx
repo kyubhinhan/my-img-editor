@@ -17,6 +17,7 @@ import { ButtonProps } from '@/src/common/SimplePopup';
 
 export default function Home() {
   // 전역 데이터 설정
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageManager, setImageManager] = useState<ImageManager | null>(null);
   const [stage, setStage] = useState('upload');
   // end of 전역 데이터 설정
@@ -52,10 +53,7 @@ export default function Home() {
     switch (stage) {
       case 'upload':
         return (
-          <ImageUploadLeft
-            imageManager={imageManager}
-            setImageManager={setImageManager}
-          />
+          <ImageUploadLeft imageFile={imageFile} setImageFile={setImageFile} />
         );
       case 'mark':
         return imageManager && <ImageMarkLeft imageManager={imageManager} />;
@@ -73,7 +71,7 @@ export default function Home() {
       case 'upload':
         return (
           <ImageUploadRight
-            imageManager={imageManager}
+            imageFile={imageFile}
             setStage={setStage}
             nextStage="mark"
           />

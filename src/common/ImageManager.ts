@@ -20,7 +20,6 @@ class ImageManager extends EventEmitter {
   private imageFile: File;
   private markers: Marker[];
   private activeMarker: Marker | null;
-  private markInfo: Object;
   private categories: string[];
   private imageElement: HTMLImageElement;
 
@@ -36,9 +35,6 @@ class ImageManager extends EventEmitter {
     this.imageElement = new Image();
     // 활성 마커
     this.activeMarker = this.markers[0];
-
-    // 이미지에 표시된 마킹 정보
-    this.markInfo = {};
   }
 
   // 이미지 정보를 반환하는 메소드

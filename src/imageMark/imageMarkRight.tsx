@@ -11,10 +11,14 @@ import { Button, ScrollShadow } from '@nextui-org/react';
 import { ButtonProps } from '@/src/common/SimplePopup';
 
 type PropsType = {
-  markers: Marker[];
-  setMarkers: Dispatch<SetStateAction<Marker[]>>;
-  activeMarker: Marker | null;
-  setActiveMarker: Dispatch<SetStateAction<Marker | null>>;
+  markersState: [
+    markers: Marker[],
+    setMarkers: Dispatch<SetStateAction<Marker[]>>,
+  ];
+  activeMarkerState: [
+    activeMarker: Marker | null,
+    setActiveMarker: Dispatch<SetStateAction<Marker | null>>,
+  ];
   hasChanges: boolean;
   showSimplePopup: (
     title: string,
@@ -27,16 +31,17 @@ type PropsType = {
 };
 
 export default function ImageMarkRight({
-  markers,
-  setMarkers,
-  activeMarker,
-  setActiveMarker,
+  markersState,
+  activeMarkerState,
   hasChanges,
   showSimplePopup,
   setStage,
   prevStage,
   nextStage,
 }: PropsType) {
+  const [markers, setMarkers] = markersState;
+  const [activeMarker, setActiveMarker] = activeMarkerState;
+
   const onAddButtonClick = () => {
     const addMarker = () => {
       const newMarker = MarkerUtil.createNewMarker(markers.length);

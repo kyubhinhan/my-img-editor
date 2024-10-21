@@ -63,18 +63,15 @@ export default function Home() {
   const renderLeftSlot = () => {
     switch (stage) {
       case 'upload':
-        return (
-          <ImageUploadLeft imageFile={imageFile} setImageFile={setImageFile} />
-        );
+        return <ImageUploadLeft imageFileState={[imageFile, setImageFile]} />;
       case 'mark':
         return (
           imageFile && (
             <ImageMarkLeft
               imageFile={imageFile}
-              markers={markers}
-              setMarkers={setMarkers}
-              activeMarker={activeMarker}
-              setActiveMarker={setActiveMarker}
+              markersState={[markers, setMarkers]}
+              activeMarkerState={[activeMarker, setActiveMarker]}
+              setActiveMarkerHasChanges={setActiveMarkerHasChanges}
             />
           )
         );
@@ -101,10 +98,8 @@ export default function Home() {
         return (
           imageFile && (
             <ImageMarkRight
-              markers={markers}
-              setMarkers={setMarkers}
-              activeMarker={activeMarker}
-              setActiveMarker={setActiveMarker}
+              markersState={[markers, setMarkers]}
+              activeMarkerState={[activeMarker, setActiveMarker]}
               hasChanges={activeMarkerHasChanges}
               showSimplePopup={showSimplePopup}
               setStage={setStage}

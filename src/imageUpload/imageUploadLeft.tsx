@@ -5,13 +5,16 @@ import { Button } from '@nextui-org/button';
 import ImageUploader from './imageUploader';
 import ImageUtil from '../common/ImageUtil';
 
-export default function ImageUploadLeft({
-  imageFile,
-  setImageFile,
-}: {
-  imageFile: File | null;
-  setImageFile: Dispatch<SetStateAction<File | null>>;
-}) {
+type PropsType = {
+  imageFileState: [
+    imageFile: File | null,
+    setImageFile: Dispatch<SetStateAction<File | null>>,
+  ];
+};
+
+export default function ImageUploadLeft({ imageFileState }: PropsType) {
+  const [imageFile, setImageFile] = imageFileState;
+
   //// 이미지 파일을 보여주는 것 관련
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {

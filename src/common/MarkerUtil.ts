@@ -68,8 +68,16 @@ const MarkerUtil = {
       pointers: [],
     };
   },
+
+  createPointer: (position: { x: number; y: number }) => {
+    return {
+      id: createUniqId(),
+      x: position.x,
+      y: position.y,
+    };
+  },
 };
 
 Object.freeze(MarkerUtil);
 export default MarkerUtil;
-export type { Marker };
+export type { Marker, Pointer };

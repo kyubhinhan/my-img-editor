@@ -13,7 +13,6 @@ import {
   useMemo,
   Dispatch,
   SetStateAction,
-  useCallback,
   MouseEvent,
 } from 'react';
 import MarkerEditor from './markerEditor';

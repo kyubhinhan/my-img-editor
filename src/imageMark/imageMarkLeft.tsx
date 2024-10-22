@@ -73,6 +73,7 @@ export default function ImageMarkLeft({
       );
     }
   }, [activeMarker, currentActiveMarker]);
+
   useEffect(() => {
     setActiveMarkerHasChanges(activeMarkerHasChanges);
   }, [activeMarkerHasChanges]);
@@ -80,6 +81,7 @@ export default function ImageMarkLeft({
   // activeMarker가 변할 때마다, tempActiveMarker도 갱신해줌
   useEffect(() => {
     setCurrentActiveMarker(activeMarker);
+    setActivePointerWithActiveMarker(activeMarker, setActivePointer);
   }, [activeMarker]);
 
   // 관련된 인자가 변할 때마다, 마커들을 다시 그려줌
@@ -96,6 +98,7 @@ export default function ImageMarkLeft({
       );
     }
   }, [canvasRef, markers, currentActiveMarker, activePointer]);
+
   const onSaveButtonClicked = () => {
     // activeMarker 갱신
     setActiveMarker(currentActiveMarker);
@@ -113,6 +116,7 @@ export default function ImageMarkLeft({
   const onRevertButtonClicked = () => {
     // currentActiveMarker을 원래대로 되돌려 줌
     setCurrentActiveMarker(activeMarker);
+    setActivePointerWithActiveMarker(activeMarker, setActivePointer);
   };
   //// end of marker들 관련
 
@@ -150,7 +154,7 @@ export default function ImageMarkLeft({
       } else {
         // 다각형의 외부에 있을 때, 새로운 포인터를 만들고, 이 포인터를 activePointer로 설정
         const newPointer = MarkerUtil.createPointer({ x, y });
-        setActiveMarker({
+        setCurrentActiveMarker({
           ...currentActiveMarker,
           pointers: [...currentActiveMarker.pointers, newPointer],
         });
@@ -346,4 +350,15 @@ function editPointer(
     }),
   });
   setActivePointer(newPointer);
+}
+
+function setActivePointerWithActiveMarker(
+  activeMarker: Marker | null,
+  setActivePointer: Dispatch<SetStateAction<Pointer | null>>
+) {
+  if (activeMarker == null || activeMarker.pointers.length == 0) {
+    setActivePointer(null);
+  } else {
+    setActivePointer(activeMarker.pointers[activeMarker.pointers.length - 1]);
+  }
 }

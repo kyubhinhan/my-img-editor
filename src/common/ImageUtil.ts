@@ -100,7 +100,7 @@ const ImageUtil = {
             activeMarker.color
           );
         } else {
-          drawPointers(canvas, marker.pointers, activePointer, 'grey');
+          drawPointers(canvas, marker.pointers, null, 'grey');
         }
       });
     } else {

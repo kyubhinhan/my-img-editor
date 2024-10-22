@@ -2,7 +2,7 @@
 
 import { Marker, Pointer } from '../common/MarkerUtil';
 
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 import { Button } from '@nextui-org/react';
 import FormItem from '../common/form/FormItem';
 import ErrUtil from '../common/ErrUtil';
@@ -44,7 +44,7 @@ export default function MarkerEditor({
     if (activeMarker == null) {
       ErrUtil.assert(false, 'activeMarker가 없습니다.');
     } else {
-      setActiveMarker({ ...activeMarker, color });
+      setActiveMarker({ ...activeMarker, color: color.toUpperCase() });
     }
   };
 

@@ -173,6 +173,7 @@ function drawPointers(
 
   // 해당 위치에 점을 먼저 찍어줌
   const verticesForMark = getVerticesForMark(pointers);
+  debugger;
   verticesForMark.forEach((vertex) => {
     ctx.beginPath();
     ctx.arc(vertex.x, vertex.y, 8, 0, Math.PI * 2);
@@ -211,8 +212,8 @@ function drawPointers(
 
 function getVerticesForMark(pointers: Pointer[]) {
   const vertices = [...pointers];
-  // y 좌표를 기준으로 왼쪽 아래에 있는 것이 가장 먼저 오도록 정렬
-  vertices.sort((a, b) => (a.y == b.y ? a.x - b.x : b.y - a.y));
+  // y 좌표를 기준으로 오른쪽 아래에 있는 것이 가장 먼저 오도록 정렬
+  vertices.sort((a, b) => (a.y == b.y ? b.x - a.x : b.y - a.y));
   // 첫번째 점을 시작점으로 설정
   const startPointer = vertices[0];
   // 시작점을 기준으로 반시계방향으로 정렬

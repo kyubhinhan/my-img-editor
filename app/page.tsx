@@ -23,6 +23,7 @@ import { ButtonProps } from '@/src/common/SimplePopup';
 export default function Home() {
   // 전역 데이터 설정
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [image, setImage] = useState<HTMLImageElement | null>(null);
   const [stage, setStage] = useState('upload');
 
   const defaultMarkers = MarkerUtil.createDefaultMarkers();
@@ -63,12 +64,17 @@ export default function Home() {
   const renderLeftSlot = () => {
     switch (stage) {
       case 'upload':
-        return <ImageUploadLeft imageFileState={[imageFile, setImageFile]} />;
+        return (
+          <ImageUploadLeft
+            imageFileState={[imageFile, setImageFile]}
+            imageState={[image, setImage]}
+          />
+        );
       case 'mark':
         return (
-          imageFile && (
+          image && (
             <ImageMarkLeft
-              imageFile={imageFile}
+              image={image}
               markersState={[markers, setMarkers]}
               activeMarkerState={[activeMarker, setActiveMarker]}
               setActiveMarkerHasChanges={setActiveMarkerHasChanges}
@@ -96,7 +102,7 @@ export default function Home() {
         );
       case 'mark':
         return (
-          imageFile && (
+          image && (
             <ImageMarkRight
               markersState={[markers, setMarkers]}
               activeMarkerState={[activeMarker, setActiveMarker]}

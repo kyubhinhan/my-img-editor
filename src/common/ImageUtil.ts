@@ -1,5 +1,6 @@
 import ErrUtil from './ErrUtil';
 import { Marker, Pointer } from './MarkerUtil';
+import { Dispatch, SetStateAction } from 'react';
 
 const ImageUtil = {
   // Image와 관련된 정보를 제공하는 함수
@@ -35,10 +36,23 @@ const ImageUtil = {
     };
   },
 
-  // canvas에 이미지를 그려주는 함수
-  showImage: (
-    canvas: HTMLCanvasElement,
+  loadImage: (
     imageFile: File,
+    setImage: Dispatch<SetStateAction<HTMLImageElement | null>>
+  ) => {
+    const img = new Image();
+    const url = URL.createObjectURL(imageFile);
+    img.src = url;
+    img.onload = () => {
+      setImage(img);
+      // 메모리 해제
+      URL.revokeObjectURL(url);
+    };
+  },
+
+  drawImage: (
+    canvas: HTMLCanvasElement,
+    image: HTMLImageElement,
     needBlur?: Boolean
   ) => {
     const ctx = canvas.getContext('2d');
@@ -47,39 +61,30 @@ const ImageUtil = {
       return;
     }
 
-    const img = new Image();
-    const url = URL.createObjectURL(imageFile);
-    img.src = url;
+    // 그리기 전에 먼저 canvas를 초기화해준다.
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    img.onload = () => {
-      // 그리기 전에 먼저 canvas를 초기화해준다.
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // needBlur가 true일 때, 이미지를 약간 흐리게 표시함
-      if (needBlur) {
-        ctx.filter = 'opacity(50%)';
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        ctx.filter = 'none';
-      } else {
-        // 이미지 그리기
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      }
-
-      // 메모리 해제
-      URL.revokeObjectURL(url);
-    };
+    // needBlur가 true일 때, 이미지를 약간 흐리게 표시함
+    if (needBlur) {
+      ctx.filter = 'opacity(50%)';
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+      ctx.filter = 'none';
+    } else {
+      // 이미지 그리기
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    }
   },
 
   // canvas에 마커들을 그려주는 함수
   drawMarkers: (
     canvas: HTMLCanvasElement,
-    imageFile: File,
+    image: HTMLImageElement,
     markers: Marker[],
     activeMarker: Marker | null,
     activePointer: Pointer | null
   ) => {
     // 마커들을 그리기 전에 먼저, 이미지를 약간 흐리게 그려줌
-    ImageUtil.showImage(canvas, imageFile, true);
+    ImageUtil.drawImage(canvas, image, true);
 
     // 마커들을 그려줌
     if (activeMarker) {

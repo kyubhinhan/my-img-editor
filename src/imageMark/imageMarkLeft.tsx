@@ -19,7 +19,7 @@ import {
 import MarkerEditor from './markerEditor';
 
 type PropsType = {
-  imageFile: File;
+  image: HTMLImageElement;
   markersState: [
     markers: Marker[],
     setMarkers: Dispatch<SetStateAction<Marker[]>>,
@@ -32,7 +32,7 @@ type PropsType = {
 };
 
 export default function ImageMarkLeft({
-  imageFile,
+  image,
   markersState,
   activeMarkerState,
   setActiveMarkerHasChanges,
@@ -89,7 +89,7 @@ export default function ImageMarkLeft({
     } else {
       ImageUtil.drawMarkers(
         canvasRef.current,
-        imageFile,
+        image,
         markers,
         currentActiveMarker,
         activePointer
@@ -150,12 +150,11 @@ export default function ImageMarkLeft({
       } else {
         // 다각형의 외부에 있을 때, 새로운 포인터를 만들고, 이 포인터를 activePointer로 설정
         const newPointer = MarkerUtil.createPointer({ x, y });
-        editPointer(
-          newPointer,
-          currentActiveMarker,
-          setCurrentActiveMarker,
-          setActivePointer
-        );
+        setActiveMarker({
+          ...currentActiveMarker,
+          pointers: [...currentActiveMarker.pointers, newPointer],
+        });
+        setActivePointer(newPointer);
       }
     }
   };

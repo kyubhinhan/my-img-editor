@@ -16,7 +16,7 @@ type PropsType = {
   title: string;
   message: string;
   buttons: ButtonProps[];
-  onButtonClick: Function;
+  onButtonClick: (buttonId: string) => void;
 };
 
 type ButtonProps = 'ok' | 'delete' | 'cancel' | 'close';
@@ -60,12 +60,7 @@ export default function SimplePopup({
   }, [buttons, onButtonClick]);
 
   return (
-    <Modal
-      isOpen={visible}
-      onOpenChange={(isOpen) => {
-        onButtonClick();
-      }}
-    >
+    <Modal isOpen={visible}>
       <ModalContent>
         <ModalHeader className="text-black">{title}</ModalHeader>
         <ModalBody className="text-black">

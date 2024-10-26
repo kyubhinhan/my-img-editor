@@ -4,7 +4,7 @@ import { Marker } from '../common/MarkerUtil';
 
 import MarkerUtil from '../common/MarkerUtil';
 
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import CommonRightComponent from '@/src/common/CommonRightComponent';
 import MarkerItem from './markerItem';
 import { Button, ScrollShadow } from '@nextui-org/react';

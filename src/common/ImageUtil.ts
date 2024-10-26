@@ -53,7 +53,7 @@ const ImageUtil = {
   drawImage: (
     canvas: HTMLCanvasElement,
     image: HTMLImageElement,
-    needBlur?: Boolean
+    needBlur?: boolean
   ) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) {
@@ -121,7 +121,7 @@ const ImageUtil = {
     if (pointers.length < 3) return false;
 
     const vertices = getVerticesForMark(pointers);
-    let x = position.x,
+    const x = position.x,
       y = position.y;
     let inside = false;
 
@@ -129,15 +129,15 @@ const ImageUtil = {
       // 첫번째 점의 경우, 마지막 점과
       // 그 다음 점의 경우, 바로 이전의 점을 기준으로 봄
       // 모든 변에 대해서 교차하는지 판단해줌
-      let xi = vertices[i].x,
+      const xi = vertices[i].x,
         yi = vertices[i].y;
-      let xj = vertices[j].x,
+      const xj = vertices[j].x,
         yj = vertices[j].y;
 
       // position에서 오른쪽으로 직선을 그었을 때, 두 점으로 만든 변과 만나는 조건은 아래와 같다.
       // position의 y 좌표가 두 점의 사이에 있어야 하고
       // position의 x 좌표가 두 점으로 만든 변과 직선이 만나는 점보다 왼쪽에 있어야 함
-      let intersect =
+      const intersect =
         yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
 
       // 홀수변 교차하면 내부에 있는 것이고, 짝수번이면 외부에 있는 것이다.
@@ -228,8 +228,6 @@ function drawPointers(
     ctx.fillStyle = color;
     ctx.fill();
   });
-
-  debugger;
 
   // 해당 점들을 이어줌
   ctx.beginPath();

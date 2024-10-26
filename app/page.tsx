@@ -43,8 +43,8 @@ export default function Home() {
   const [message, setMessage] = useState('');
   const [buttons, setButtons] = useState<ButtonProps[]>([]);
   const [onButtonClick, setOnButtonClick] = useState<
-    () => (id: string) => undefined
-  >(() => (id: string) => undefined);
+    (buttonId: string) => void
+  >(() => {});
   const showSimplePopup = (
     title: string,
     message: string,
@@ -55,8 +55,8 @@ export default function Home() {
     setButtons(buttons);
     setVisible(true);
     return new Promise((resolve) => {
-      setOnButtonClick(() => (id?: string) => {
-        resolve(id);
+      setOnButtonClick(() => (buttonId: string) => {
+        resolve(buttonId);
         setVisible(false);
       });
     });

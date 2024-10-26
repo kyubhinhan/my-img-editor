@@ -273,8 +273,6 @@ export default function ImageMarkLeft({
     }
   };
 
-  debugger;
-
   //// end of canvas 관련
 
   return (

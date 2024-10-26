@@ -1,4 +1,3 @@
-import ErrUtil from './ErrUtil';
 import Lodash from 'lodash';
 
 type Pointer = {
@@ -13,6 +12,7 @@ type Marker = {
   color: string;
   category: string;
   pointers: Pointer[];
+  area: { [key: string]: string };
 };
 
 const defaultColorPalete = [
@@ -41,6 +41,7 @@ const MarkerUtil = {
         color: defaultColorPalete[0],
         category: categories[0],
         pointers: [],
+        area: {},
       },
       {
         id: createUniqId(),
@@ -48,6 +49,7 @@ const MarkerUtil = {
         color: defaultColorPalete[1],
         category: categories[1],
         pointers: [],
+        area: {},
       },
       {
         id: createUniqId(),
@@ -55,6 +57,7 @@ const MarkerUtil = {
         color: defaultColorPalete[2],
         category: categories[2],
         pointers: [],
+        area: {},
       },
     ];
   },

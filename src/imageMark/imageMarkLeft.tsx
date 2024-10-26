@@ -30,10 +30,6 @@ type PropsType = {
     setActiveMarker: Dispatch<SetStateAction<Marker | null>>,
   ];
   setActiveMarkerHasChanges: Dispatch<SetStateAction<boolean>>;
-  markerPositionState: [
-    markerPosition: { [key: string]: string },
-    setMarkerPosition: Dispatch<SetStateAction<{ [key: string]: string }>>,
-  ];
   showSimplePopup: (
     title: string,
     message: string,
@@ -46,13 +42,11 @@ export default function ImageMarkLeft({
   markersState,
   activeMarkerState,
   setActiveMarkerHasChanges,
-  markerPositionState,
   showSimplePopup,
 }: PropsType) {
   //// marker들 관련
   const [markers, setMarkers] = markersState;
   const [activeMarker, setActiveMarker] = activeMarkerState;
-  const [markerPosition, setMarkerPosition] = markerPositionState;
   const [currentActiveMarker, setCurrentActiveMarker] = useState<Marker | null>(
     null
   );
@@ -116,26 +110,32 @@ export default function ImageMarkLeft({
     if (currentActiveMarker == null) {
       ErrUtil.assert(false);
     } else {
-      const markerArea = ImageUtil.createMarkerArea(
+      const currentMarkerArea = ImageUtil.createMarkerArea(
         currentActiveMarker.pointers
       );
       const getKeyWithPosition = (position: { x: number; y: number }) =>
         `${position.x}-${position.y}`;
 
       // checkArea
-      const isOtherMarker = markerArea.some((position) => {
-        return getKeyWithPosition(position) in markerPosition;
-      });
+      const isOtherMarker = markers
+        .filter((marker) => marker.id != currentActiveMarker.id)
+        .some((marker) => {
+          const areaObject = marker.area;
+          return currentMarkerArea.some((position) => {
+            return getKeyWithPosition(position) in areaObject;
+          });
+        });
 
       if (isOtherMarker) {
         // 다른 마커가 있을 때, 경고창을 띄우고 저장이 안되도록 함
         showSimplePopup('알림', '다른 마커의 구역과 겹칩니다.', ['ok']);
       } else {
         // 다른 마커가 없을 때, 해당 마커의 영역을 저장하고, activeMarker랑 markers를 갱신해줌
-        markerArea.forEach((position) => {
-          markerPosition[getKeyWithPosition(position)] = currentActiveMarker.id;
+        const areaObject: { [key: string]: string } = {};
+        currentMarkerArea.forEach((position) => {
+          areaObject[getKeyWithPosition(position)] = currentActiveMarker.id;
         });
-        setMarkerPosition(markerPosition);
+        currentActiveMarker.area = areaObject;
 
         // activeMarker 갱신
         setActiveMarker(currentActiveMarker);

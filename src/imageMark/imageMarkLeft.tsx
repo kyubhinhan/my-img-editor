@@ -6,6 +6,8 @@ import ImageUtil from '../common/ImageUtil';
 import MarkerUtil from '../common/MarkerUtil';
 import ErrUtil from '../common/ErrUtil';
 
+import { ButtonProps } from '@/src/common/SimplePopup';
+
 import {
   useState,
   useEffect,
@@ -32,6 +34,11 @@ type PropsType = {
     markerPosition: { [key: string]: string },
     setMarkerPosition: Dispatch<SetStateAction<{ [key: string]: string }>>,
   ];
+  showSimplePopup: (
+    title: string,
+    message: string,
+    buttons: ButtonProps[]
+  ) => Promise<unknown>;
 };
 
 export default function ImageMarkLeft({
@@ -40,6 +47,7 @@ export default function ImageMarkLeft({
   activeMarkerState,
   setActiveMarkerHasChanges,
   markerPositionState,
+  showSimplePopup,
 }: PropsType) {
   //// marker들 관련
   const [markers, setMarkers] = markersState;
@@ -111,19 +119,37 @@ export default function ImageMarkLeft({
       const markerArea = ImageUtil.createMarkerArea(
         currentActiveMarker.pointers
       );
+      const getKeyWithPosition = (position: { x: number; y: number }) =>
+        `${position.x}-${position.y}`;
 
-      // activeMarker 갱신
-      setActiveMarker(currentActiveMarker);
-      // markers 갱신
-      setMarkers(
-        markers.map((marker) => {
-          if (marker.id == currentActiveMarker?.id) {
-            return currentActiveMarker;
-          } else {
-            return marker;
-          }
-        })
-      );
+      // checkArea
+      const isOtherMarker = markerArea.some((position) => {
+        return getKeyWithPosition(position) in markerPosition;
+      });
+
+      if (isOtherMarker) {
+        // 다른 마커가 있을 때, 경고창을 띄우고 저장이 안되도록 함
+        showSimplePopup('알림', '다른 마커의 구역과 겹칩니다.', ['ok']);
+      } else {
+        // 다른 마커가 없을 때, 해당 마커의 영역을 저장하고, activeMarker랑 markers를 갱신해줌
+        markerArea.forEach((position) => {
+          markerPosition[getKeyWithPosition(position)] = currentActiveMarker.id;
+        });
+        setMarkerPosition(markerPosition);
+
+        // activeMarker 갱신
+        setActiveMarker(currentActiveMarker);
+        // markers 갱신
+        setMarkers(
+          markers.map((marker) => {
+            if (marker.id == currentActiveMarker?.id) {
+              return currentActiveMarker;
+            } else {
+              return marker;
+            }
+          })
+        );
+      }
     }
   };
   const onRevertButtonClicked = () => {

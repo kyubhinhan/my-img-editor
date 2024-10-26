@@ -82,6 +82,7 @@ export default function Home() {
               activeMarkerState={[activeMarker, setActiveMarker]}
               setActiveMarkerHasChanges={setActiveMarkerHasChanges}
               markerPositionState={[markerPosition, setMarkerPosition]}
+              showSimplePopup={showSimplePopup}
             />
           )
         );

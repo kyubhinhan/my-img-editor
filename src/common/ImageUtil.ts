@@ -146,6 +146,55 @@ const ImageUtil = {
 
     return inside;
   },
+
+  createMarkerArea: (pointers: Pointer[]) => {
+    type Position = { x: number; y: number };
+    const markerArea: Position[] = [];
+
+    // 점이 3개 보다 작을 때 빠른 return을 함
+    if (pointers.length < 3) return markerArea;
+
+    // 점들이 포함된 사각형의 좌표를 구해줌
+    const rect = (() => {
+      let minX = 0;
+      let maxX = 0;
+      let minY = 0;
+      let maxY = 0;
+      pointers.forEach((pointer, index) => {
+        if (index == 0) {
+          minX = pointer.x;
+          maxX = pointer.x;
+          minY = pointer.y;
+          maxY = pointer.y;
+        } else {
+          if (pointer.x < minX) {
+            minX = pointer.x;
+          }
+          if (pointer.x > maxX) {
+            maxX = pointer.x;
+          }
+          if (pointer.y < minY) {
+            minY = pointer.y;
+          }
+          if (pointer.y > maxY) {
+            maxY = pointer.y;
+          }
+        }
+      });
+      return { minX, maxX, minY, maxY };
+    })();
+
+    // 사각형을 돌면서 사각형 내의 좌표들 중 Marker에 속한 좌표를 구해줌
+    for (let x: number = rect.minX; x <= rect.maxX; x++) {
+      for (let y: number = rect.minY; y <= rect.maxY; y++) {
+        if (ImageUtil.isPositionInPolyGon({ x, y }, pointers)) {
+          markerArea.push({ x, y });
+        }
+      }
+    }
+
+    return markerArea;
+  },
 };
 
 Object.freeze(ImageUtil);
@@ -173,13 +222,14 @@ function drawPointers(
 
   // 해당 위치에 점을 먼저 찍어줌
   const verticesForMark = getVerticesForMark(pointers);
-  debugger;
   verticesForMark.forEach((vertex) => {
     ctx.beginPath();
     ctx.arc(vertex.x, vertex.y, 8, 0, Math.PI * 2);
     ctx.fillStyle = color;
     ctx.fill();
   });
+
+  debugger;
 
   // 해당 점들을 이어줌
   ctx.beginPath();

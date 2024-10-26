@@ -28,6 +28,10 @@ type PropsType = {
     setActiveMarker: Dispatch<SetStateAction<Marker | null>>,
   ];
   setActiveMarkerHasChanges: Dispatch<SetStateAction<boolean>>;
+  markerPositionState: [
+    markerPosition: { [key: string]: string },
+    setMarkerPosition: Dispatch<SetStateAction<{ [key: string]: string }>>,
+  ];
 };
 
 export default function ImageMarkLeft({
@@ -35,10 +39,12 @@ export default function ImageMarkLeft({
   markersState,
   activeMarkerState,
   setActiveMarkerHasChanges,
+  markerPositionState,
 }: PropsType) {
   //// marker들 관련
   const [markers, setMarkers] = markersState;
   const [activeMarker, setActiveMarker] = activeMarkerState;
+  const [markerPosition, setMarkerPosition] = markerPositionState;
   const [currentActiveMarker, setCurrentActiveMarker] = useState<Marker | null>(
     null
   );
@@ -99,18 +105,26 @@ export default function ImageMarkLeft({
   }, [canvasRef, markers, currentActiveMarker, activePointer]);
 
   const onSaveButtonClicked = () => {
-    // activeMarker 갱신
-    setActiveMarker(currentActiveMarker);
-    // markers 갱신
-    setMarkers(
-      markers.map((marker) => {
-        if (marker.id == currentActiveMarker?.id) {
-          return currentActiveMarker;
-        } else {
-          return marker;
-        }
-      })
-    );
+    if (currentActiveMarker == null) {
+      ErrUtil.assert(false);
+    } else {
+      const markerArea = ImageUtil.createMarkerArea(
+        currentActiveMarker.pointers
+      );
+
+      // activeMarker 갱신
+      setActiveMarker(currentActiveMarker);
+      // markers 갱신
+      setMarkers(
+        markers.map((marker) => {
+          if (marker.id == currentActiveMarker?.id) {
+            return currentActiveMarker;
+          } else {
+            return marker;
+          }
+        })
+      );
+    }
   };
   const onRevertButtonClicked = () => {
     // currentActiveMarker을 원래대로 되돌려 줌
@@ -258,6 +272,8 @@ export default function ImageMarkLeft({
       setStartPosition({ x, y });
     }
   };
+
+  debugger;
 
   //// end of canvas 관련
 

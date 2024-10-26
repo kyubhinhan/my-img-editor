@@ -32,6 +32,9 @@ export default function Home() {
     defaultMarkers[0]
   );
   const [activeMarkerHasChanges, setActiveMarkerHasChanges] = useState(false);
+  const [markerPosition, setMarkerPosition] = useState<{
+    [key: string]: string;
+  }>({});
   // end of 전역 데이터 설정
 
   // simplePopup 관련 설정
@@ -78,6 +81,7 @@ export default function Home() {
               markersState={[markers, setMarkers]}
               activeMarkerState={[activeMarker, setActiveMarker]}
               setActiveMarkerHasChanges={setActiveMarkerHasChanges}
+              markerPositionState={[markerPosition, setMarkerPosition]}
             />
           )
         );

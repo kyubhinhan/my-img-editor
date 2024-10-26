@@ -6,7 +6,7 @@ import { Marker } from '@/src/common/MarkerUtil';
 // util import
 import MarkerUtil from '@/src/common/MarkerUtil';
 
-import { useState, useEffect, ReactElement } from 'react';
+import { useState } from 'react';
 import HSplitter from '@/app/HSplitter';
 import ImageUploadLeft from '@/src/imageUpload/imageUploadLeft';
 import ImageUploadRight from '@/src/imageUpload/imageUploadRight';
@@ -42,9 +42,9 @@ export default function Home() {
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
   const [buttons, setButtons] = useState<ButtonProps[]>([]);
-  const [onButtonClick, setOnButtonClick] = useState<Function>(
-    () => (id?: string) => {}
-  );
+  const [onButtonClick, setOnButtonClick] = useState<
+    () => (id: string) => undefined
+  >(() => (id: string) => undefined);
   const showSimplePopup = (
     title: string,
     message: string,

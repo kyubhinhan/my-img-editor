@@ -15,6 +15,11 @@ type Marker = {
   area: { [key: string]: string };
 };
 
+type Position = {
+  x: number;
+  y: number;
+};
+
 const defaultColorPalete = [
   '#FF0000',
   '#0000FF',
@@ -72,12 +77,16 @@ const MarkerUtil = {
     };
   },
 
-  createPointer: (position: { x: number; y: number }) => {
+  createPointer: (position: Position) => {
     return {
       id: createUniqId(),
       x: position.x,
       y: position.y,
     };
+  },
+
+  getKeyWithPosition: (position: Position) => {
+    return `${position.x}-${position.y}`;
   },
 };
 

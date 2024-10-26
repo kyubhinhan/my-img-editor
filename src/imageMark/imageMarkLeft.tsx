@@ -85,7 +85,7 @@ export default function ImageMarkLeft({
     setActiveMarkerHasChanges(activeMarkerHasChanges);
   }, [activeMarkerHasChanges]);
 
-  // activeMarker가 변할 때마다, tempActiveMarker도 갱신해줌
+  // activeMarker가 변할 때마다, currentActiveMarker도 갱신해줌
   useEffect(() => {
     setCurrentActiveMarker(activeMarker);
     setActivePointerWithActiveMarker(activeMarker, setActivePointer);
@@ -113,8 +113,6 @@ export default function ImageMarkLeft({
       const currentMarkerArea = ImageUtil.createMarkerArea(
         currentActiveMarker.pointers
       );
-      const getKeyWithPosition = (position: { x: number; y: number }) =>
-        `${position.x}-${position.y}`;
 
       // checkArea
       const isOtherMarker = markers
@@ -122,7 +120,7 @@ export default function ImageMarkLeft({
         .some((marker) => {
           const areaObject = marker.area;
           return currentMarkerArea.some((position) => {
-            return getKeyWithPosition(position) in areaObject;
+            return MarkerUtil.getKeyWithPosition(position) in areaObject;
           });
         });
 
@@ -133,7 +131,8 @@ export default function ImageMarkLeft({
         // 다른 마커가 없을 때, 해당 마커의 영역을 저장하고, activeMarker랑 markers를 갱신해줌
         const areaObject: { [key: string]: string } = {};
         currentMarkerArea.forEach((position) => {
-          areaObject[getKeyWithPosition(position)] = currentActiveMarker.id;
+          areaObject[MarkerUtil.getKeyWithPosition(position)] =
+            currentActiveMarker.id;
         });
         currentActiveMarker.area = areaObject;
 
@@ -169,35 +168,45 @@ export default function ImageMarkLeft({
   });
 
   const onMouseDown = (event: MouseEvent) => {
-    if (canvasRef.current == null || currentActiveMarker == null) return;
+    if (canvasRef.current == null) return;
 
     const canvas = canvasRef.current;
-    const pointers = currentActiveMarker.pointers;
-
-    // mouse cursor 모양을 변경해줌
-    setCursorWithMouseEvent(canvas, event, pointers, setCursor);
-
     const { x, y } = findPosition(canvas, event);
 
-    // activePointer 관련 처리를 해줌
-    const pointer = findPointer(x, y, pointers);
-    if (pointer != null) {
-      setActivePointer(pointer);
+    if (currentActiveMarker == null) {
+      // activeMarker가 없었을 때, marker 내부가 클릭되었을 때, 해당 마커를 activeMarker로 만들어줌
+      const clickedMarker = markers.find(
+        (marker) => MarkerUtil.getKeyWithPosition({ x, y }) in marker.area
+      );
+      if (clickedMarker != null) {
+        setActiveMarker(clickedMarker);
+      }
     } else {
-      // 기존 포인터가 없었을 경우,
-      // 다각형의 내부에 있는지 판단해줌
-      const isInPolyGon = ImageUtil.isPositionInPolyGon({ x, y }, pointers);
-      if (isInPolyGon) {
-        // 다각형의 내부에 있을 때,
-        setStartPosition({ x, y });
+      const pointers = currentActiveMarker.pointers;
+
+      // mouse cursor 모양을 변경해줌
+      setCursorWithMouseEvent(canvas, event, pointers, setCursor);
+
+      // activePointer 관련 처리를 해줌
+      const pointer = findPointer(x, y, pointers);
+      if (pointer != null) {
+        setActivePointer(pointer);
       } else {
-        // 다각형의 외부에 있을 때, 새로운 포인터를 만들고, 이 포인터를 activePointer로 설정
-        const newPointer = MarkerUtil.createPointer({ x, y });
-        setCurrentActiveMarker({
-          ...currentActiveMarker,
-          pointers: [...currentActiveMarker.pointers, newPointer],
-        });
-        setActivePointer(newPointer);
+        // 기존 포인터가 없었을 경우,
+        // 다각형의 내부에 있는지 판단해줌
+        const isInPolyGon = ImageUtil.isPositionInPolyGon({ x, y }, pointers);
+        if (isInPolyGon) {
+          // 다각형의 내부에 있을 때,
+          setStartPosition({ x, y });
+        } else {
+          // 다각형의 외부에 있을 때, 새로운 포인터를 만들고, 이 포인터를 activePointer로 설정
+          const newPointer = MarkerUtil.createPointer({ x, y });
+          setCurrentActiveMarker({
+            ...currentActiveMarker,
+            pointers: [...currentActiveMarker.pointers, newPointer],
+          });
+          setActivePointer(newPointer);
+        }
       }
     }
   };

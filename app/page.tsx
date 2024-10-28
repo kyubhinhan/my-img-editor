@@ -118,6 +118,10 @@ export default function Home() {
       case 'edit':
         return (
           <ImageEditRight
+            markersState={[markers, setMarkers]}
+            activeMarkerState={[activeMarker, setActiveMarker]}
+            hasChanges={activeMarkerHasChanges}
+            showSimplePopup={showSimplePopup}
             setStage={setStage}
             prevStage="mark"
             nextStage="download"

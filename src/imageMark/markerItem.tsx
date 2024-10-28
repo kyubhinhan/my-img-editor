@@ -14,7 +14,7 @@ export default function MarkerItem({
   marker: Marker;
   isActive: boolean;
   setActiveMarker: (marker: Marker | null) => void;
-  deleteMarker: (id: string) => void;
+  deleteMarker: null | ((id: string) => void);
 }) {
   const onButtonClick = () => {
     if (isActive) {
@@ -25,14 +25,19 @@ export default function MarkerItem({
   };
 
   const deleteButtonClick = () => {
-    deleteMarker(marker.id);
+    if (deleteMarker != null) {
+      deleteMarker(marker.id);
+    }
   };
 
   return (
     <div className="flex flex-row" style={{ gap: '25px' }}>
-      <Button isIconOnly color={'danger'} onClick={deleteButtonClick}>
-        <RiDeleteBin6Line />
-      </Button>
+      {deleteMarker && (
+        <Button isIconOnly color={'danger'} onClick={deleteButtonClick}>
+          <RiDeleteBin6Line />
+        </Button>
+      )}
+
       <Button
         variant={isActive ? 'solid' : 'flat'}
         fullWidth

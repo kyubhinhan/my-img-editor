@@ -74,6 +74,7 @@ const MarkerUtil = {
       color: defaultColorPalete[markerLength % defaultColorPalete.length],
       category: categories[markerLength % categories.length],
       pointers: [],
+      area: {},
     };
   },
 

@@ -102,7 +102,7 @@ export default function ImageMarkRight({
       prevStage={prevStage}
       nextStage={nextStage}
       disablePrevButton={false}
-      disableNextButton={false}
+      disableNextButton={hasChanges}
     >
       <div className="flex flex-col" style={{ gap: '20px' }}>
         <Button

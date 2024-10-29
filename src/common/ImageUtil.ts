@@ -93,23 +93,42 @@ const ImageUtil = {
       // 나머지는 저장된 정보로 그리며, 이때 색은 모두 회색으로 그려준다.
       markers.forEach((marker) => {
         if (marker.id == activeMarker.id) {
-          drawPointers(
+          drawPointersInMark(
             canvas,
             activeMarker.pointers,
             activePointer,
             activeMarker.color
           );
         } else {
-          drawPointers(canvas, marker.pointers, null, 'grey');
+          drawPointersInMark(canvas, marker.pointers, null, 'grey');
         }
       });
     } else {
       // activeMarker가 없을 경우,
       // marker들에 저장되어 있는 포인터들을 그려줌
       markers.forEach((marker) => {
-        drawPointers(canvas, marker.pointers, null, marker.color);
+        drawPointersInMark(canvas, marker.pointers, null, marker.color);
       });
     }
+  },
+
+  // edit 단계에서 마커들을 이미지에 그려주는 함수
+  drawMarkersInEdit: (
+    canvas: HTMLCanvasElement,
+    image: HTMLImageElement,
+    markers: Marker[],
+    activeMarker: Marker | null
+  ) => {
+    // 마커들을 그리기 전에 먼저, 이미지를 약간 흐리게 그려줌
+    ImageUtil.drawImage(canvas, image, true);
+
+    markers.forEach((marker) => {
+      if (marker.id == activeMarker?.id) {
+        drawPointersInEdit(canvas, marker.pointers, marker.color);
+      } else {
+        drawPointersInEdit(canvas, marker.pointers, 'grey');
+      }
+    });
   },
 
   // 점이 polyGon 내에 있는지 판단해주는 함수
@@ -200,7 +219,7 @@ const ImageUtil = {
 Object.freeze(ImageUtil);
 export default ImageUtil;
 
-function drawPointers(
+function drawPointersInMark(
   canvas: HTMLCanvasElement,
   pointers: Pointer[],
   activePointer: Pointer | null,
@@ -256,6 +275,31 @@ function drawPointers(
   ctx.fillStyle = color;
   ctx.fill();
   ctx.globalAlpha = 1;
+}
+
+function drawPointersInEdit(
+  canvas: HTMLCanvasElement,
+  pointers: Pointer[],
+  color: string
+) {
+  const ctx = canvas.getContext('2d');
+  if (ctx == null) {
+    ErrUtil.assert(false);
+    return;
+  }
+
+  const verticesForMark = getVerticesForMark(pointers);
+  ctx.beginPath();
+  verticesForMark.forEach((vertex, index) => {
+    if (index == 0) {
+      ctx.moveTo(vertex.x, vertex.y);
+    } else {
+      ctx.lineTo(vertex.x, vertex.y);
+    }
+  });
+  ctx.closePath();
+  ctx.strokeStyle = color;
+  ctx.stroke();
 }
 
 function getVerticesForMark(pointers: Pointer[]) {

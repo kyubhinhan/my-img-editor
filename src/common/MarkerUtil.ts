@@ -13,6 +13,7 @@ type Marker = {
   category: string;
   pointers: Pointer[];
   area: { [key: string]: string };
+  editColor: string | null;
 };
 
 type Position = {
@@ -47,6 +48,7 @@ const MarkerUtil = {
         category: categories[0],
         pointers: [],
         area: {},
+        editColor: null,
       },
       {
         id: createUniqId(),
@@ -55,6 +57,7 @@ const MarkerUtil = {
         category: categories[1],
         pointers: [],
         area: {},
+        editColor: null,
       },
       {
         id: createUniqId(),
@@ -63,6 +66,7 @@ const MarkerUtil = {
         category: categories[2],
         pointers: [],
         area: {},
+        editColor: null,
       },
     ];
   },
@@ -75,6 +79,7 @@ const MarkerUtil = {
       category: categories[markerLength % categories.length],
       pointers: [],
       area: {},
+      editColor: null,
     };
   },
 

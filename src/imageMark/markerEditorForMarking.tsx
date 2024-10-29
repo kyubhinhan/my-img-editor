@@ -2,7 +2,7 @@
 
 import { Marker, Pointer } from '../common/MarkerUtil';
 
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { Button } from '@nextui-org/react';
 import FormItem from '../common/form/FormItem';
 import ErrUtil from '../common/ErrUtil';
@@ -21,7 +21,7 @@ type PropsType = {
   onRevertButtonClicked: () => void;
 };
 
-export default function MarkerEditor({
+export default function MarkerEditorForMarking({
   currentMarkerState,
   activePointerState,
   activeMarkerHasChanges,

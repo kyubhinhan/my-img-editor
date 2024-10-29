@@ -17,7 +17,7 @@ import {
   SetStateAction,
   MouseEvent,
 } from 'react';
-import MarkerEditor from './markerEditor';
+import MarkerEditorForMarking from './markerEditorForMarking';
 
 type PropsType = {
   image: HTMLImageElement;
@@ -312,7 +312,7 @@ export default function ImageMarkLeft({
 
   return (
     <section className="h-full flex flex-col items-center">
-      <MarkerEditor
+      <MarkerEditorForMarking
         currentMarkerState={[currentActiveMarker, setCurrentActiveMarker]}
         activePointerState={[activePointer, setActivePointer]}
         activeMarkerHasChanges={activeMarkerHasChanges}

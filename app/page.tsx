@@ -83,7 +83,16 @@ export default function Home() {
           )
         );
       case 'edit':
-        return <ImageEditLeft />;
+        return (
+          image && (
+            <ImageEditLeft
+              image={image}
+              markersState={[markers, setMarkers]}
+              activeMarkerState={[activeMarker, setActiveMarker]}
+              setActiveMarkerHasChanges={setActiveMarkerHasChanges}
+            />
+          )
+        );
       case 'download':
         return <ImageDownloadLeft />;
       default:
